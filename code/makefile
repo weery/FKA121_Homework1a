@@ -18,4 +18,3 @@ $(PROGRAM): $(OBJECTS)
 clean:
 	rm -f *.o
 	touch *.c
-
