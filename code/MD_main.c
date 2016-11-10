@@ -58,6 +58,7 @@ int main()
     cell_length = 1;
 
     /* Initialize arrays */
+    /*
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
             q[i][j] = 0;
@@ -65,6 +66,7 @@ int main()
             f[i][j] = 0;
         }
     }
+    */
 
     for (int i  = 0; i < nbr_of_timesteps; i++){
         for (int j = 0; j < nbr_of_particles; j++){
