@@ -38,9 +38,9 @@ int main()
 
 
     /* Current displacement, velocities, and acceleratons */
-    double q[nbr_of_particles][nbr_of_dimensions]; // Displacements
-    double v[nbr_of_particles][nbr_of_dimensions]; // Velocities
-    double f[nbr_of_particles][nbr_of_dimensions]; // Forces
+    double q[nbr_of_particles][nbr_of_dimensions] = { 0 }; // Displacements
+    double v[nbr_of_particles][nbr_of_dimensions] = { 0 }; // Velocities
+    double f[nbr_of_particles][nbr_of_dimensions] = { 0 }; // Forces
 
     /* Allocate memory for large vectors */
     /* Create 3 dimensional data by placing iniitalizeing a 1-dimensional array*/
