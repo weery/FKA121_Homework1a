@@ -8,3 +8,4 @@
 *.exe
 *.out
 *.app
+MD # explicitly ignoring the MD executable on linux systems
