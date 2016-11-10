@@ -9,7 +9,7 @@
 import matplotlib.pylab as plt
 import numpy as np
 
-filename = "energies.dat"
+filename = "energy.dat"
 
 
 data = np.loadtxt(filename)
@@ -27,7 +27,7 @@ plt.title('$E(t)$')
 #plt.xlim([0, 100])
 
 # Tick fontsize
-plt.xticks(fontisize=12)
+plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
 
 
