@@ -75,6 +75,7 @@ int main()
     }
 
     /* Initial conditions */
+    init_fcc(q,nbr_of_particles,lattice_param);
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
             qq(0,i,j)=q[i][j];
@@ -142,7 +143,6 @@ int main()
         fprintf(file1, "\n");
     }
     fclose(file1);
-
     /* Save energies to file */
     file2 = fopen("energy.dat","w");
 
@@ -153,17 +153,6 @@ int main()
         fprintf(file2, "%.4f \n", energy[i]);
     }
     fclose(file2);
-
-    /* Save energies to file */
-    file3 = fopen("virial.dat","w");
-
-    for (int i = 0; i < nbr_of_timesteps; i ++)
-    {
-        current_time = i*timestep;
-        fprintf(file3, "%.4f \t", current_time);
-        fprintf(file3, "%.4f \n", energy[i]);
-    }
-    fclose(file3);
 
     free(disp_arr);
 
