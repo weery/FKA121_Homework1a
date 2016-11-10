@@ -50,25 +50,18 @@ int main()
     double* energy =(double*)malloc(nbr_of_timesteps*sizeof(double));
     double* virial =(double*)malloc(nbr_of_timesteps*sizeof(double));
 
+    //TODO go over parameters again
     /* Initialize parameters*/
     initial_displacement = 0.05;
     lattice_param = 4.046; // For aluminium
     lattice_spacing = lattice_param/sqrt(2.0);
     timestep = 0.01;
-    m_AL = 1;
-    cell_length = 16; // Check this
+    m_AL = 0.0027964; // In ASU
+    cell_length = 4*lattice_param; // Check this
 
-    /* Initialize arrays */
-    /*
-    for (int i = 0; i < nbr_of_particles; i++){
-        for (int j = 0; j < nbr_of_dimensions; j++){
-            q[i][j] = 0;
-            v[i][j] = 0;
-            f[i][j] = 0;
-        }
-    }
-    */
 
+
+    // Initialize all displacements, for all times, as 0
     for (int i  = 0; i < nbr_of_timesteps; i++){
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
@@ -88,8 +81,14 @@ int main()
         }
     }
 
+    init_fcc(q, 4, lattice_param);
+
     energy[0]=get_energy_AL(q,cell_length,nbr_of_particles);
     virial[0]=get_virial_AL(q,cell_length,nbr_of_particles);
+
+
+    get_forces_AL(f,q,cell_length,nbr_of_particles);
+
 
     /* Simulation */
     for (int i = 1; i < nbr_of_timesteps; i++)
