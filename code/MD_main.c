@@ -52,10 +52,11 @@ int main()
 
     /* Initialize parameters*/
     initial_displacement = 0.05;
-    lattice_param = 1;
+    lattice_param = 4.046; // For aluminium
+    lattice_spacing = lattice_param/sqrt(2.0);
     timestep = 0.01;
     m_AL = 1;
-    cell_length = 1;
+    cell_length = 16; // Check this
 
     /* Initialize arrays */
     /*
@@ -81,7 +82,8 @@ int main()
         for (int j = 0; j < nbr_of_dimensions; j++){
 
             // Initial perturbation from equilibrium
-            q[i][j] = initial_displacement*((double)rand()/(double)RAND_MAX);
+            q[i][j] = lattice_spacing * initial_displacement
+                * ((double)rand()/(double)RAND_MAX);
             qq(0,i,j)=q[i][j];
         }
     }
@@ -118,7 +120,15 @@ int main()
         }
 
         /* Calculate energy */
-        energy[i]=get_energy_AL(q,cell_length,nbr_of_particles);
+        // Potential energy
+        energy[i] = get_energy_AL(q,cell_length,nbr_of_particles);
+        // Kinetic energy
+        for (int j = 0; j < nbr_of_particles; j++) {
+            for (int k = 0; k < nbr_of_dimensions; k++) {
+                energy[i] += m_AL * pow(v[j][k], 2) / 2;
+            }
+        }
+
         virial[i]=get_virial_AL(q,cell_length,nbr_of_particles);
 
         /* Save current displacements to array*/
