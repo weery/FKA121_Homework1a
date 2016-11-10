@@ -9,3 +9,4 @@
 *.out
 *.app
 MD # explicitly ignoring the MD executable on linux systems
+code/MD
