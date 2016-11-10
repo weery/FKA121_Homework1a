@@ -79,6 +79,9 @@ int main()
     /* Initial conditions */
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
+
+            // Initial perturbation from equilibrium
+            q[i][j] = initial_displacement*((double)rand()/(double)RAND_MAX);
             qq(0,i,j)=q[i][j];
         }
     }
