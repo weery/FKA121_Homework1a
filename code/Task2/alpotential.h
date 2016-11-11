@@ -11,6 +11,7 @@ extern void get_forces_AL(double[][3] , double[][3], double, int);
 extern double get_energy_AL(double[][3], double, int);
 extern double get_kinetic_AL(double[][3], int, int, double);
 extern double get_virial_AL(double[][3], double, int);
+extern double instantaneous_temperature(double,int);
 
 
 #endif

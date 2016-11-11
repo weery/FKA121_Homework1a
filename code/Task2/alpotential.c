@@ -21,6 +21,9 @@ const double electron_density[75] = {2.0210, 2.2730, 2.5055, 2.7380, 2.9705, 3.2
 const double embedding_energy[65] = {0, 0.1000, 0.2000, 0.3000, 0.4000, 0.5000, 0.6000, 0.7000, 0.8000, 0.9000, 1.0000, 1.1000, 1.2000, 0, -1.1199, -1.4075, -1.7100, -1.9871, -2.2318, -2.4038, -2.5538, -2.6224, -2.6570, -2.6696, -2.6589, -2.6358, -18.4387, -5.3706, -2.3045, -3.1161, -2.6175, -2.0666, -1.6167, -1.1280, -0.4304, -0.2464, -0.0001, 0.1898, 0.2557, 86.5178, 44.1632, -13.5018, 5.3853, -0.3996, 5.9090, -1.4103, 6.2976, 0.6785, 1.1611, 1.3022, 0.5971, 0.0612, -141.1819, -192.2166, 62.9570, -19.2831, 21.0288, -24.3978, 25.6930, -18.7304, 1.6087, 0.4704, -2.3503, -1.7862, -1.7862};
 
 
+/* Bolt<mann's constant */
+#define k_b  8.62 // In eV/K
+
 /* Evaluates the spline in x. */
 
 double splineEval(double x, const double *table,int m) {
@@ -443,4 +446,22 @@ double get_kinetic_AL(double velocities[][3], int nbr_of_dimensions, int nbr_ato
 		}
 	}
 	return energy;
+}
+
+
+/* Calculation of instantaneous temperature, se 5.2 in molecular dynamics*/
+double instantaneous_temperature(double kinetic_energy,int nbr_of_particles)
+{
+	double temperature= 0;
+	temperature = 2/(k_b*nbr_of_particles*3) * kinetic_energy;
+	return temperature;
+}
+
+/* Calculation of instantaneous pressure, se 5.3 in molecular dynamics*/
+double instantaneous_pressure(double virial, double temperature, int nbr_of_particles)
+{
+	double pressure=0;
+	pressure += virial + temperature *k_b*nbr_of_particles;
+	return pressure;
+
 }

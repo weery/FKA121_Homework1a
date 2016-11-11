@@ -31,6 +31,7 @@ int main()
     double lattice_param;
 
     double timestep;
+    int equilibrium_time;
 
     FILE *file1;
     FILE *file2;
@@ -59,7 +60,7 @@ int main()
     timestep = 0.01;
     m_AL = 0.0027964; // In ASU
     cell_length = 4*lattice_param; // Check this
-
+    equilibrium_time = 1000;
 
 
     // Initialize all displacements, for all times, as 0
@@ -101,7 +102,54 @@ int main()
 
 
     /* Simulation */
-    for (int i = 1; i < nbr_of_timesteps; i++)
+    /* Simulate to equilibrium*/
+    for (int i = 1; i < equilibrium_time; i++)
+    {
+        /** Verlet algorithm **/
+        /* Half step for velocity */
+        for (int j = 0; j < nbr_of_particles; j++){
+            for (int k = 0; k < nbr_of_dimensions; k++){
+                v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+            }
+        }
+
+        /* Update displacement*/
+        for (int j = 0; j < nbr_of_particles; j++){
+            for (int k = 0; k < nbr_of_dimensions; k++){
+                q[j][k] += timestep * v[j][k];
+            }
+        }
+
+        /* Forces */
+        get_forces_AL(f,q,cell_length,nbr_of_particles);
+
+        /* Final velocity*/
+        for (int j = 0; j < nbr_of_particles; j++){
+            for (int k = 0; k < nbr_of_dimensions; k++){
+                v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+            }
+        }
+
+        /* Calculate energy */
+        // Potential energy
+        energy[i] = get_energy_AL(q,cell_length,nbr_of_particles);
+        // Kinetic energy
+        energy_kin[i] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+
+        virial[i]=get_virial_AL(q,cell_length,nbr_of_particles);
+
+        /* Save current displacements to array*/
+        for (int j = 0; j < nbr_of_particles; j++){
+            for (int k = 0; k < nbr_of_dimensions; k++){
+                qq(i,j,k)=q[j][k];
+            }
+        }
+    }
+
+
+
+    /* After equilibrium time*/
+    for (int i = equilibrium_time+1; i < nbr_of_timesteps; i++)
     {
         /** Verlet algorithm **/
         /* Half step for velocity */
