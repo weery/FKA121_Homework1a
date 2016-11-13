@@ -3,7 +3,7 @@
 % Created by Martin Gren 2014-10-25.
 
 % load the data file
-data = importdata('displacement1.dat');
+data = importdata('velocities1.dat');
 
 sizeD=size(data);
 

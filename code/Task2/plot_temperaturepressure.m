@@ -2,7 +2,7 @@ close % plot the energies
 % Created by Martin Gren 2014-10-25.
 
 % load the data file
-data = importdata('energy1.dat');
+data = importdata('temppres1.dat');
 
 %plot 
 figure;

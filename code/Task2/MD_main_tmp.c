@@ -31,6 +31,7 @@ int main()
     double lattice_param;
 
     double timestep;
+    int equilibrium_time;
 
     FILE *file1;
     FILE *file2;
@@ -54,12 +55,12 @@ int main()
     //TODO go over parameters again
     /* Initialize parameters*/
     initial_displacement = 0.05;
-    lattice_param = 4.046; // For aluminium (Å)
+    lattice_param = 4.046; // For aluminium
     lattice_spacing = lattice_param/sqrt(2.0);
-    timestep = 0.01; // 0.1 Bad, 0.01 Seems decent
+    timestep = 0.01;
     m_AL = 0.0027964; // In ASU
-    cell_length = 4*lattice_param; // Check this, or 8?
-
+    cell_length = 4*lattice_param; // Check this
+    equilibrium_time = 1000;
 
 
     // Initialize all displacements, for all times, as 0
@@ -80,7 +81,7 @@ int main()
         for (int j = 0; j < nbr_of_dimensions; j++){
 
             // Initial perturbation from equilibrium
-            q[i][j] +=lattice_param* initial_displacement
+            q[i][j] += initial_displacement
                 * ((double)rand()/(double)RAND_MAX);
 
         }
@@ -100,49 +101,7 @@ int main()
     get_forces_AL(f,q,cell_length,nbr_of_particles);
 
 
-    /* Simulation */
-    for (int i = 1; i < nbr_of_timesteps; i++)
-    {
-        /** Verlet algorithm **/
-        /* Half step for velocity */
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
-            }
-        }
 
-        /* Update displacement*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                q[j][k] += timestep * v[j][k];
-            }
-        }
-
-        /* Forces */
-        get_forces_AL(f,q,cell_length,nbr_of_particles);
-
-        /* Final velocity*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
-            }
-        }
-
-        /* Calculate energy */
-        // Potential energy
-        energy[i] = get_energy_AL(q,cell_length,nbr_of_particles);
-        // Kinetic energy
-        energy_kin[i] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
-
-        virial[i]=get_virial_AL(q,cell_length,nbr_of_particles);
-
-        /* Save current displacements to array*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                qq(i,j,k)=q[j][k];
-            }
-        }
-    }
 
     /* Save data to file*/
     file1 = fopen("displacement.dat","w");
@@ -186,10 +145,7 @@ int main()
     }
     fclose(file3);
 
-    free(energy_kin); energy_kin=NULL;
-    free(energy); energy=NULL;
-    free(disp_arr); disp_arr=NULL;
-	free(virial); virial=NULL;
+    free(disp_arr);
 
     return 0;
 }
