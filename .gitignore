@@ -10,3 +10,9 @@
 *.app
 MD # explicitly ignoring the MD executable on linux systems
 code/MD
+
+# Data files (or do we want to store them in the repository?)
+*.dat
+
+# Figures
+#*.pdf
