@@ -15,7 +15,7 @@ filename = "energy.dat"
 data = np.loadtxt(filename)
 
 plt.figure(figsize=(8,6))
-plt.plot(data[:,0], data[:,1], '-')
+plt.plot(data[:,0], data[:,1]+data[:,2], '-')
 
 # Set labels
 plt.xlabel('Time / [ps]')
