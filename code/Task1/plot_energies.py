@@ -32,5 +32,5 @@ plt.yticks(fontsize=12)
 
 
 # Save and display the plot
-plt.savefig('energies.pdf')
+#plt.savefig('energies.pdf')
 plt.show()
