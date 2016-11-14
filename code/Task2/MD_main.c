@@ -77,7 +77,8 @@ int main()
     lattice_spacing = lattice_param/sqrt(2.0);
     timestep = 0.01; // 0.1 Bad, 0.01 Seems decent
     m_AL = 0.0027964; // In ASU
-    cell_length = 4*lattice_param; // Check this, or 8?
+    cell_length = 4*lattice_param;  // Side of the supercell: The 256 atoms are 
+                                    // structured in a block of 4x4x4 unit cells
     temperature_eq =500.0;
 
 
