@@ -11,8 +11,8 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 2000
-#define nbr_of_timesteps_eq 2000
+#define nbr_of_timesteps 10000
+#define nbr_of_timesteps_eq 10000
 #define nbr_of_dimensions 3
 
 double boundary_condition(double,double);
