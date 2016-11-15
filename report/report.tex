@@ -14,13 +14,6 @@
 
 Molecular dynamics is a simulation of the movement of atoms and molecules. What is of interest in such a simulations is e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.
 
-\begin{comment}
-Already in antiquity people studied the effect of particles impinging on other
-particles. Since then the art has developed \ldots\
-(\emph{If you like to do so, you may take the opportunity to put the  methods
-in a wider perspective here.}) Here is a random reference.\cite{lamport94}
-\end{comment}
-
 \section*{Problem 1}
 
 \begin{figure}[H]
@@ -57,13 +50,30 @@ As we can see in figure \ref{fig:timestep} the required timestep is between $\De
         \centering
         \resizebox{\columnwidth}{!}{\input{graphics/task3/temperature500.tikz}}
     \end{subfigure}
-    \caption{After the equilibrium, both the pressure and the temperature needs some time to stabilize after rescaling the velocities, but remains stable for longer time.}
+    \caption{After the equilibrium, both the pressure and the temperature needs some time to stabilize after rescaling the velocities, but remains stable for longer time. The equalisation temperature was set to $\unit[500]{C^\circ}$.}
+    \label{fig:equilibrium500}
 \end{figure}
 
-
-
+In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. There are some fluctuations in the beginning due to the rescaling of the velocities.
+ 
 
 \section*{Problem 4}
+
+\begin{figure}[H]
+    \centering
+    \captionsetup[subfigure]{justification=centering}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \resizebox{\columnwidth}{!}{\input{graphics/task4/pressure500.tikz}}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \resizebox{\columnwidth}{!}{\input{graphics/task4/temperature500.tikz}}
+    \end{subfigure}
+    \caption{After the equilibrium, both the pressure and the temperature needs some time to stabilize after rescaling the velocities, but remains stable for longer time. The equalisation temperature was first set to $\unit[1000]{C^\circ}$ for the smelting and then the temperature was reduced to $\unit[700]{C^\circ}$.}
+    \label{fig:equilibrium500}
+\end{figure}
+
 
 \section*{Problem 5}
 $\unit[1]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}}$\\
