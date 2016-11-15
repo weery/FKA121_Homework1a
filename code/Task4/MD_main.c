@@ -37,7 +37,7 @@ int main()
 
     double timestep;
 
-    double temperature_eq = 1000.0;
+    double temperature_eq = 1200.0;
 
     FILE *file1;
     FILE *file2;

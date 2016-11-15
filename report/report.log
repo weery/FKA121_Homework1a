@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.5.12)  15 NOV 2016 09:47
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.5.12)  15 NOV 2016 14:03
 entering extended mode
 **report.tex
 
@@ -1197,7 +1197,7 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \float@box=\box58
 \@float@everytoks=\toks42
 \@floatcapt=\box59
-))
+)
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\caption\subcaption.sty"
 Package: subcaption 2013/02/03 v1.1-62 Sub-captions (AR)
 
@@ -1223,7 +1223,20 @@ Package caption Info: listings package is loaded.
 \c@subfigure=\count187
 \c@subtable=\count188
 )
-\tikzscale@accuracy=\skip54
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\comment\comment.sty"
+\CommentStream=\write5
+
+Excluding comment 'comment'))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\units\units.sty"
+Package: units 1998/08/04 v0.9b Typesetting units
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\units\nicefrac.sty"
+Package: nicefrac 1998/08/04 v0.9b Nice fractions
+\L@UnitsRaiseDisplaystyle=\skip54
+\L@UnitsRaiseTextstyle=\skip55
+\L@UnitsRaiseScriptstyle=\skip56
+))
+\tikzscale@accuracy=\skip57
 
 ("C:\Users\Victors\Desktop\cas\Year 2\Quarter 2\Ber채kningsfysik - FKA121\homew
 ork\Hp1a\report\report.aux")
@@ -1352,7 +1365,7 @@ LaTeX Info: Redefining \nameref on input line 9.
 ork\Hp1a\report\report.out")
 ("C:\Users\Victors\Desktop\cas\Year 2\Quarter 2\Ber채kningsfysik - FKA121\homew
 ork\Hp1a\report\report.out")
-\@outlinefile=\write5
+\@outlinefile=\write6
 \c@lstlisting=\count196
  ABD: EveryShipout initializing macros
 
@@ -1454,9 +1467,7 @@ File: utxsyc.fd 2000/12/15 v3.1
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 )
-Missing character: There is no � in font txb!
-Missing character: There is no � in font txb!
-
+Excluding 'comment' comment.
 ("C:\Users\Victors\Desktop\cas\Year 2\Quarter 2\Ber채kningsfysik - FKA121\homew
 ork\Hp1a\report\graphics/task1/energy01.tikz"
 Missing character: There is no ; in font nullfont!
@@ -1469,29 +1480,19 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 )
-<template_files/LJ.pdf, id=32, 622.325pt x 463.33101pt>
+<template_files/LJ.pdf, id=31, 622.325pt x 463.33101pt>
 File: template_files/LJ.pdf Graphic file (type pdf)
 
 <use template_files/LJ.pdf>
-Package pdftex.def Info: template_files/LJ.pdf used on input line 63.
+Package pdftex.def Info: template_files/LJ.pdf used on input line 50.
 (pdftex.def)             Requested size: 240.99391pt x 179.42578pt.
-LaTeX Font Info:    Try loading font information for OT1+txtt on input line 100
-.
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\txfonts\ot1txtt.fd"
-File: ot1txtt.fd 2000/12/15 v3.1
-)
-Package microtype Info: Loading generic settings for font family
-(microtype)             `txtt' (encoding: OT1).
-(microtype)             For optimal results, create family-specific settings.
-(microtype)             See the microtype manual for details.
-
-<template_files/backgroundlines.pdf, id=34, 597.51227pt x 845.0471pt>
+<template_files/backgroundlines.pdf, id=33, 597.51227pt x 845.0471pt>
 File: template_files/backgroundlines.pdf Graphic file (type pdf)
 
 <use template_files/backgroundlines.pdf>
 Package pdftex.def Info: template_files/backgroundlines.pdf used on input line 
-101.
+86.
 (pdftex.def)             Requested size: 597.5108pt x 845.04504pt.
  [1
 
@@ -1504,9 +1505,19 @@ pdfTeX warning: pdflatex (file C:/Users/Victors/Desktop/cas/Year 2/Quarter 2/Be
 r채kningsfysik - FKA121/homework/Hp1a/report/template_files/LJ.pdf): PDF inclus
 ion: multiple pdfs with page group included in a single page
 >]
-LaTeX Font Info:    Try loading font information for TS1+txtt on input line 103
-.
- ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\txfonts\ts1txtt.fd"
+LaTeX Font Info:    Try loading font information for OT1+txtt on input line 87.
+
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\txfonts\ot1txtt.fd"
+File: ot1txtt.fd 2000/12/15 v3.1
+)
+Package microtype Info: Loading generic settings for font family
+(microtype)             `txtt' (encoding: OT1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Try loading font information for TS1+txtt on input line 90.
+
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\txfonts\ts1txtt.fd"
 File: ts1txtt.fd 2000/12/15 v3.1
 )
 Package microtype Info: Loading generic settings for font family
@@ -1521,13 +1532,13 @@ File: template_files/backgroundlines.pdf Graphic file (type pdf)
 
 <use template_files/backgroundlines.pdf>
 Package pdftex.def Info: template_files/backgroundlines.pdf used on input line 
-145.
+132.
 (pdftex.def)             Requested size: 597.5108pt x 845.04504pt.
  [2]
 LaTeX Font Info:    Font shape `OT1/txtt/bx/n' in size <12> not available
-(Font)              Font shape `OT1/txtt/b/n' tried instead on input line 155.
+(Font)              Font shape `OT1/txtt/b/n' tried instead on input line 142.
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 156.
+nput line 143.
 
 ("C:\Users\Victors\Desktop\cas\Year 2\Quarter 2\Ber채kningsfysik - FKA121\homew
 ork\Hp1a\report\template_files/pi.m")
@@ -1544,33 +1555,33 @@ ork\Hp1a\report\template_files/pi.c")
 File: template_files/backgroundlines.pdf Graphic file (type pdf)
  <use template_files/backgroundlines.pdf>
 Package pdftex.def Info: template_files/backgroundlines.pdf used on input line 
-164.
+151.
 (pdftex.def)             Requested size: 597.5108pt x 845.04504pt.
 
 [3]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 164.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 164.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 151.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 151.
 
 ("C:\Users\Victors\Desktop\cas\Year 2\Quarter 2\Ber채kningsfysik - FKA121\homew
 ork\Hp1a\report\report.aux")
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 164.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 164.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 151.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 151.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: E82704D929FE5E2A876B10AF50C45B0A;296.
 
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 164.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 151.
  ) 
 Here is how much of TeX's memory you used:
- 38037 strings out of 493921
- 839910 string characters out of 3144870
- 1744549 words of memory out of 3000000
- 40526 multiletter control sequences out of 15000+200000
- 42559 words of font info for 160 fonts, out of 3000000 for 9000
+ 38145 strings out of 493921
+ 841897 string characters out of 3144870
+ 1746248 words of memory out of 3000000
+ 40627 multiletter control sequences out of 15000+200000
+ 49759 words of font info for 177 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 57i,23n,79p,10424b,2351s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 57i,23n,79p,10424b,2343s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Progra
 m Files (x86)/MiKTeX 2.9/fonts/type1/public/txfonts/rtxmi.pfb><C:/Program Files
  (x86)/MiKTeX 2.9/fonts/type1/public/txfonts/rtxr.pfb><C:/Program Files (x86)/M
@@ -1582,9 +1593,9 @@ txfonts/txsy.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/txfonts/
 txtt.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program F
 iles (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (4 pages, 148356 bytes).
+Output written on report.pdf (4 pages, 147278 bytes).
 PDF statistics:
- 201 PDF objects out of 1000 (max. 8388607)
- 95 named destinations out of 1000 (max. 500000)
- 32311 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 199 PDF objects out of 1000 (max. 8388607)
+ 94 named destinations out of 1000 (max. 500000)
+ 35383 words of extra memory for PDF output out of 35830 (max. 10000000)
 

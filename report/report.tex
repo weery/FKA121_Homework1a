@@ -12,10 +12,14 @@
 
 \section*{Introduction}
 
+Molecular dynamics is a simulation of the movement of atoms and molecules. What is of interest in such a simulations is e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.
+
+\begin{comment}
 Already in antiquity people studied the effect of particles impinging on other
 particles. Since then the art has developed \ldots\
 (\emph{If you like to do so, you may take the opportunity to put the  methods
 in a wider perspective here.}) Here is a random reference.\cite{lamport94}
+\end{comment}
 
 \section*{Problem 1}
 
@@ -25,16 +29,21 @@ in a wider perspective here.}) Here is a random reference.\cite{lamport94}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \resizebox{\columnwidth}{!}{\input{graphics/task1/energy01.tikz}}
-        \caption{Energy, timestep 0.1}
+        \caption{$\Delta t =\unit[0.1]{ASU}$}
         \label{fig:otherImg_a}
     \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \resizebox{\columnwidth}{!}{\input{graphics/task1/energy001.tikz}}
-        \caption{Energy, timestep 0.01}
+        \caption{$\Delta t =\unit[0.01]{ASU}$}
         \label{fig:otherImg_b}
     \end{subfigure}
+    \caption{For the different energy simulations, the same number of timesteps was used but the lengths of the different timesteps makes them evolve over different times.}
 \end{figure}
+
+AS we can see in figure \ref{fig1} the required timestep is between $ 0.1\approx0.01$
+
+
 
 As a starting point we first look at scattering from a hard-sphere
 potential. We also consider the Lennard--Jones potential, which is depicted

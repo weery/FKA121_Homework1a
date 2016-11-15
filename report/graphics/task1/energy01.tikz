@@ -23,8 +23,9 @@ ymax=3000000000,
 ylabel={Energy / [ASU]},
 axis background/.style={fill=white},
 title style={font=\bfseries},
-title={Awesome title},
-legend style={legend cell align=left,align=left,draw=white!15!black}
+title={Time evolution of energy},
+legend style={draw=white!15!black},
+legend pos = {north west}
 ]
 \addplot [color=mycolor1,solid]
   table[row sep=crcr]{%
