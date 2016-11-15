@@ -11,8 +11,8 @@ figure;
 
 
 traj=randi([1, 256]);
-traj_dat=zeros(1,100000);
-for t=1:100000
+traj_dat=zeros(1,10000);
+for t=1:10000
         traj_dat(t)=norm([data(1,1+(traj-1)*3)-data(t,1+(traj-1)*3),data(1,2+(traj-1)*3)-data(t,2+(traj-1)*3),data(1,3+(traj-1)*3)-data(t,3+(traj-1)*3)]);
 end
 plot(traj_dat)
