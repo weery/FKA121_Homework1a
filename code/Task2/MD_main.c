@@ -11,8 +11,8 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 1000
-#define nbr_of_timesteps_eq 100
+#define nbr_of_timesteps 2000
+#define nbr_of_timesteps_eq 2000
 #define nbr_of_dimensions 3
 
 double boundary_condition(double,double);
@@ -34,7 +34,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq = 500.0+273;
+    double temperature_eq = 500.0+273.15;
 
     FILE *file1;
     FILE *file2;
@@ -62,7 +62,7 @@ int main()
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.001; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.0001; // 0.1 Bad, 0.01 Seems decent
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells
@@ -146,15 +146,14 @@ int main()
 
         virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
 
-        
+
         inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
-		//printf("instantaneous temperature: %.4f\n", inst_temperature_eq );
 
 
-        alpha = 1+1.0/10.0*(temperature_eq-inst_temperature_eq)/inst_temperature_eq;
+        alpha = 1+1.0/100.0*(temperature_eq-inst_temperature_eq)/inst_temperature_eq;
         //alpha = 1+1/(double)(nbr_of_timesteps)*(temperature_eq-inst_temperature_eq)/inst_temperature_eq;
 
-        
+
         //printf("Alpha: %.4f\n",alpha );
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
@@ -170,7 +169,6 @@ int main()
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
-
     /* Simulation after equilibrium*/
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
@@ -211,6 +209,7 @@ int main()
 		// Temperature
         temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles,
         	timestep, i);
+
 
         // Pressure
         pressure_avg[i] = averaged_pressure(virial, energy_kin, volume,
