@@ -11,8 +11,8 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 2000
-#define nbr_of_timesteps_eq 2000
+#define nbr_of_timesteps 10000
+#define nbr_of_timesteps_eq 2500
 #define nbr_of_dimensions 3
 
 double boundary_condition(double,double);
@@ -34,7 +34,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq = 500.0+273.15;
+    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
 
     FILE *file1;
     FILE *file2;
@@ -110,54 +110,56 @@ int main()
     double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
     double inst_temperature_eq;
     double alpha = 1;
-    for (int i = 1; i < nbr_of_timesteps_eq; i++)
-    {
-        /** Verlet algorithm **/
-        /* Half step for velocity */
-        for (int j = 0; j < nbr_of_particles; j++){
-        	for (int k = 0; k < nbr_of_dimensions; k++){
-        		v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+    for (int equil = 0; equil < 2; equil++) {
+        for (int i = 1; i < nbr_of_timesteps_eq; i++)
+        {
+            /** Verlet algorithm **/
+            /* Half step for velocity */
+            for (int j = 0; j < nbr_of_particles; j++){
+            	for (int k = 0; k < nbr_of_dimensions; k++){
+            		v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+                }
             }
-        }
 
-        /* Update displacement*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                q[j][k] += timestep * v[j][k];
-                q[j][k] = boundary_condition(q[j][k],cell_length);
+            /* Update displacement*/
+            for (int j = 0; j < nbr_of_particles; j++){
+                for (int k = 0; k < nbr_of_dimensions; k++){
+                    q[j][k] += timestep * v[j][k];
+                    q[j][k] = boundary_condition(q[j][k],cell_length);
+                }
             }
-        }
 
-        /* Forces */
-        get_forces_AL(f,q,cell_length,nbr_of_particles);
+            /* Forces */
+            get_forces_AL(f,q,cell_length,nbr_of_particles);
 
-        /* Final velocity*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                v[j][k] += timestep * 0.5* f[j][k]/m_AL;
+            /* Final velocity*/
+            for (int j = 0; j < nbr_of_particles; j++){
+                for (int k = 0; k < nbr_of_dimensions; k++){
+                    v[j][k] += timestep * 0.5* f[j][k]/m_AL;
+                }
             }
-        }
 
-        /* Calculate energy */
-        // Potential energy
-        energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
-        // Kinetic energy
-        energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+            /* Calculate energy */
+            // Potential energy
+            energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
+            // Kinetic energy
+            energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
 
-        virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
-
-
-        inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
+            virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
 
 
-        alpha = 1+1.0/100.0*(temperature_eq-inst_temperature_eq)/inst_temperature_eq;
-        //alpha = 1+1/(double)(nbr_of_timesteps)*(temperature_eq-inst_temperature_eq)/inst_temperature_eq;
+            inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
 
 
-        //printf("Alpha: %.4f\n",alpha );
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                v[j][k] *= sqrt(alpha);
+            alpha = 1+1.0/100.0*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
+            //alpha = 1+1/(double)(nbr_of_timesteps)*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
+
+
+            //printf("Alpha: %.4f\n",alpha );
+            for (int j = 0; j < nbr_of_particles; j++){
+                for (int k = 0; k < nbr_of_dimensions; k++){
+                    v[j][k] *= sqrt(alpha);
+                }
             }
         }
     }
