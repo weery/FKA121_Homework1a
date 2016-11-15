@@ -16,3 +16,11 @@ code/*/MD
 
 # Figures
 #*.pdf
+
+# Misc. report stuff
+report/*.aux
+report/*.log
+report/*.gz
+
+# Tikz files in code
+code/*.tikz
