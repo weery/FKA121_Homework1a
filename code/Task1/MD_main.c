@@ -14,6 +14,8 @@
 #define nbr_of_timesteps 1000
 #define nbr_of_dimensions 3
 
+double boundary_condition(double,double);
+
 
 /* Main program */
 int main()
@@ -21,14 +23,15 @@ int main()
     srand(time(NULL));
 
     /* Simulation parameters */
-    double m_AL;
-    double cell_length; // Called something else
+    double m_AL; // Mass of atom
+    double cell_length; // Side length of supercell
 
-    double lattice_spacing;
-    double initial_displacement;
+    double lattice_spacing; // Smallest length between atoms
+    double initial_displacement;    // Initial displacement of the atoms from their
+                                    // lattice positions
 
-    int n_unit_cell;
-    double lattice_param;
+    double lattice_param;   // Lattice parameter, length of each side in the
+                            // unit cell
 
     double timestep;
 
@@ -43,7 +46,7 @@ int main()
     double f[nbr_of_particles][nbr_of_dimensions] = { 0 }; // Forces
 
     /* Allocate memory for large vectors */
-    /* Create 3 dimensional data by placing iniitalizeing a 1-dimensional array*/
+    /* Simulate 3 dimensional data by placing iniitalizeing a 1-dimensional array*/
     #define qq(i,j,k) (disp_arr[nbr_of_particles*nbr_of_dimensions*i+nbr_of_dimensions*j+k])
     double* disp_arr =(double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_dimensions*sizeof(double));
 
@@ -58,10 +61,8 @@ int main()
     lattice_spacing = lattice_param/sqrt(2.0);
     timestep = 0.01; // 0.1 Bad, 0.01 Seems decent
     m_AL = 0.0027964; // In ASU
-    cell_length = 4*lattice_param;  // Side of the supercell: The 256 atoms are 
+    cell_length = 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     // structured in a block of 4x4x4 unit cells
-
-
 
     // Initialize all displacements, for all times, as 0
     for (int i  = 0; i < nbr_of_timesteps; i++){
@@ -72,16 +73,16 @@ int main()
         }
     }
 
-    /* Initial conditions */
-
     /* Put atoms on lattice */
     init_fcc(q, 4, lattice_param);
+
+    /* Initial conditions */
 
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
 
             // Initial perturbation from equilibrium
-            q[i][j] +=lattice_param* initial_displacement
+            q[i][j] +=lattice_spacing* initial_displacement
                 * ((double)rand()/(double)RAND_MAX);
 
         }
@@ -116,6 +117,7 @@ int main()
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
                 q[j][k] += timestep * v[j][k];
+                q[j][k] = boundary_condition(q[j][k],cell_length);
             }
         }
 
@@ -193,4 +195,10 @@ int main()
 	free(virial); virial=NULL;
 
     return 0;
+}
+
+
+double boundary_condition(double u, double L)
+{
+    return fmod(u,L);
 }

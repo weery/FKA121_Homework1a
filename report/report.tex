@@ -1,7 +1,9 @@
 \input{template_files/packages}
 
+\input{settings}
+
 \title{H1a: Classical scattering by a central potential}
-\author{Emil Chalmers and Emilia Chalmers}
+\author{Victor Nilsson and Simon Nilsson}
 \date{\today}
 
 \begin{document}
@@ -16,6 +18,24 @@ particles. Since then the art has developed \ldots\
 in a wider perspective here.}) Here is a random reference.\cite{lamport94}
 
 \section*{Problem 1}
+
+\begin{figure}[H]
+    \centering
+    \captionsetup[subfigure]{justification=centering}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \resizebox{\columnwidth}{!}{\input{graphics/task1/energy01.tikz}}
+        \caption{Energy, timestep 0.1}
+        \label{fig:otherImg_a}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \resizebox{\columnwidth}{!}{\input{graphics/task1/energy001.tikz}}
+        \caption{Energy, timestep 0.01}
+        \label{fig:otherImg_b}
+    \end{subfigure}
+\end{figure}
+
 As a starting point we first look at scattering from a hard-sphere
 potential. We also consider the Lennard--Jones potential, which is depicted
 in Figure~\ref{fig1}. (\emph{Always refer to Figures in the text.})
