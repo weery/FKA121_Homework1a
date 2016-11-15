@@ -8,14 +8,15 @@ sizeD=size(data);
 
 %plot
 figure;
-
-
-traj=randi([1, 256]);
-traj_dat=zeros(1,100000);
-for t=1:100000
-        traj_dat(t)=norm([data(1,1+(traj-1)*3)-data(t,1+(traj-1)*3),data(1,2+(traj-1)*3)-data(t,2+(traj-1)*3),data(1,3+(traj-1)*3)-data(t,3+(traj-1)*3)]);
+hold on
+for t=1:1:1000
+    for i=1:256
+        hold on
+        plot3(data(t,1+(i-1)*3),data(t,2+(i-1)*3),data(t,3+(i-1)*3),'X')
+    end
+    pause(0.1)
+    clf
 end
-plot(traj_dat)
 % labels
 xlabel('Time / [dim. unit]');
 ylabel('Displacement / [dim. unit]');
