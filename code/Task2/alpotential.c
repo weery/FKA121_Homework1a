@@ -479,14 +479,14 @@ double instantaneous_pressure(double virial, double temperature, int nbr_of_part
 }
 
 /* Calculation of pressure based on averaged virial */
-double averaged_pressure(double* virial, double* kinetic_energy, double volume, int timestep, int current_nbr_of_timesteps)
+double averaged_pressure(double* virial, double* kinetic_energy, double volume, double timestep, int current_nbr_of_timesteps)
 {
     double pressure=0;
     for (int i = 0; i < current_nbr_of_timesteps+1; i++)
     {
-        pressure +=virial[i]+2/(3*volume)*kinetic_energy[i];
-    }
-	pressure/=timestep*(current_nbr_of_timesteps+1);
+        pressure +=virial[i]/volume+2/(3*volume)*kinetic_energy[i];
 
+    }
+	pressure/=timestep*current_nbr_of_timesteps;
     return pressure;
 }
