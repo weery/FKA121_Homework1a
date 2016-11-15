@@ -9,7 +9,7 @@ sizeD=size(data);
 %plot
 figure;
 hold on
-for t=1:1:1000
+for t=1:100:100000
     for i=1:256
         hold on
         plot3(data(t,1+(i-1)*3),data(t,2+(i-1)*3),data(t,3+(i-1)*3),'X')

@@ -11,7 +11,7 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 10000
+#define nbr_of_timesteps 100000
 #define nbr_of_timesteps_eq 100
 #define nbr_of_dimensions 3
 
@@ -37,7 +37,7 @@ int main()
 
     double timestep;
 
-    double temperature_eq = 500.0;
+    double temperature_eq = 1000.0;
 
     FILE *file1;
     FILE *file2;
@@ -67,6 +67,9 @@ int main()
     m_AL = 0.0027964; // In ASU
     cell_length = 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     // structured in a block of 4x4x4 unit cells
+
+
+
 
     // Initialize all displacements, for all times, as 0
     for (int i  = 0; i < nbr_of_timesteps; i++){
@@ -262,6 +265,6 @@ int main()
 
 
 double boundary_condition(double u, double L)
-{
-    return fmod(u,L);
+{   double m = fmod(u,L);
+    return m;
 }

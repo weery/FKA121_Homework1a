@@ -6,10 +6,10 @@ data = importdata('energy.dat');
 
 %plot 
 figure;
-plot(data(:,1:),data(:,2)+data(:,3),'-')
+plot(data(:,1:end),data(:,2:end)+data(:,3:20:end),'-')
 hold on
-plot(data(:,1),data(:,2),'-')
-plot(data(:,1),data(:,3),'-')
+plot(data(:,1:end),data(:,2:20:end),'-')
+plot(data(:,1:end),data(:,3:20:end),'-')
 
 % labels
 xlabel('Time / [ASU]');
