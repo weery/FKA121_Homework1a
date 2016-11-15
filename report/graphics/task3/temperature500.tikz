@@ -19,8 +19,9 @@ xlabel={Time / [ps]},
 ymin=700,
 ymax=1500,
 ylabel={Average temperature / [K]},
+label style ={font=\Large},
 axis background/.style={fill=white},
-title style={font=\bfseries},
+title style={font=\bfseries\Huge},
 title={Average temperature}
 ]
 \addplot [color=mycolor1,solid,forget plot]
