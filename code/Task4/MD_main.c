@@ -38,9 +38,7 @@ int main()
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
     double isothermal_compressibility = 0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
-    FILE *file1;
-    FILE *file2;
-    FILE *file3;
+    FILE *file;
 
 
     /* Current displacement, velocities, and acceleratons */
@@ -56,10 +54,10 @@ int main()
     double* energy 			= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* energy_kin 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* virial 			= (double*) malloc(nbr_of_timesteps * sizeof(double));
-    double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
-    double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
     double* temperature_avg = (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* pressure_avg 	= (double*) malloc(nbr_of_timesteps * sizeof(double));
+    double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
+    double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
 
     //TODO go over parameters again
     /* Initialize parameters*/
@@ -84,8 +82,8 @@ int main()
     /* Put atoms on lattice */
     init_fcc(q, 4, lattice_param);
 
-    /* Initial conditions */
 
+    /* Initial conditions */
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
 
@@ -101,16 +99,17 @@ int main()
 
     /* Simulation */
     /* Equilibrium stage */
-    // double energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
-    // Kinetic energy
-    double energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
-    double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
+
     double inst_temperature_eq;
     double inst_pressure_eq;
-    temperature[0] = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
-    pressure[0] = instantaneous_pressure(virial_eq, temperature[0], nbr_of_particles, volume);
-    double alpha_T = 1;
-    double alpha_P = 1;
+    double alpha_T = 1.0;
+    double alpha_P = 1.0;
+    double energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+    double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
+
+    temperature[0]  = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
+    pressure[0]     = instantaneous_pressure(virial_eq, temperature[0], nbr_of_particles, volume);
+
     for (int equil = 0; equil < 2; equil++) {
         for (int i = 1; i < nbr_of_timesteps_eq; i++)
         {
@@ -141,8 +140,6 @@ int main()
             }
 
             /* Calculate energy */
-            // Potential energy
-            // energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
             // Kinetic energy
             energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
 
@@ -156,10 +153,12 @@ int main()
             pressure[equil*(nbr_of_timesteps_eq-1) + i] = inst_pressure_eq;
 
 
+            // Update alhpas
             alpha_T = 1 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            //alpha_T = 1+1/(double)(nbr_of_timesteps)*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-
             alpha_P = 1 + 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+
+            // DEBUG:alpha
+            //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
 
             // Scale velocities
             for (int j = 0; j < nbr_of_particles; j++){
@@ -181,6 +180,8 @@ int main()
     }
 
 
+    printf("%.8f \n", cell_length);
+
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
             qq(0,i,j)=q[i][j];
@@ -194,6 +195,7 @@ int main()
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
+
     /* Simulation after equilibrium*/
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
@@ -213,7 +215,7 @@ int main()
             }
         }
 
-        /* Forces */
+        /* Update Forces */
         get_forces_AL(f,q,cell_length,nbr_of_particles);
 
         /* Final velocity*/
@@ -232,15 +234,13 @@ int main()
         virial[i] = get_virial_AL(q,cell_length,nbr_of_particles);
 
 		// Temperature
-        temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles,
-        	i);
+        temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles, i);
         temperature[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_temperature(energy_kin[i],
             nbr_of_particles);
 
 
         // Pressure
-        pressure_avg[i] = averaged_pressure(virial, energy_kin, volume,
-        	i);
+        pressure_avg[i] = averaged_pressure(virial, energy_kin, volume, i);
         pressure[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_pressure(virial[i],
             temperature[2*(nbr_of_timesteps_eq-1) + i],
             nbr_of_particles, volume);
@@ -252,89 +252,90 @@ int main()
                 qq(i,j,k)=q[j][k];
             }
         }
-    }
+        
+    } // equilibration/simulation
 
     /* Save data to file*/
-    file1 = fopen("displacement.dat","w");
+    file = fopen("displacement.dat","w");
 
     double current_time;
     for (int i = 0; i < nbr_of_timesteps; i ++)
     {
         current_time = i*timestep;
-        fprintf(file1, "%.4f \t", current_time );
+        fprintf(file, "%.4f \t", current_time );
         for (int j = 0; j < nbr_of_particles; j++)
         {
             for (int k = 0; k < nbr_of_dimensions; k++)
             {
-                fprintf(file1, "%.4f \t", qq(i,j,k));
+                fprintf(file, "%.4f \t", qq(i,j,k));
             }
         }
-        fprintf(file1, "\n");
+        fprintf(file, "\n");
     }
-    fclose(file1);
+    fclose(file);
 
     /* Save energies to file */
-    file2 = fopen("energy.dat","w");
+    file = fopen("energy.dat","w");
 
     for (int i = 0; i < nbr_of_timesteps; i ++)
     {
         current_time = i*timestep;
-        fprintf(file2, "%.4f \t", current_time);
-        fprintf(file2, "%.4f \t", energy[i]);
-        fprintf(file2, "%.4f \n", energy_kin[i]);
+        fprintf(file, "%.4f \t", current_time);
+        fprintf(file, "%.4f \t", energy[i]);
+        fprintf(file, "%.4f \n", energy_kin[i]);
     }
-    fclose(file2);
+    fclose(file);
 
     /* Save energies to file */
-    /*file3 = fopen("virial.dat","w");
+    /*file = fopen("virial.dat","w");
 
     for (int i = 0; i < nbr_of_timesteps; i ++)
     {
         current_time = i*timestep;
-        fprintf(file3, "%.4f \t", current_time);
-        fprintf(file3, "%.4f \n", virial[i]);
+        fprintf(file, "%.4f \t", current_time);
+        fprintf(file, "%.4f \n", virial[i]);
     }
-    fclose(file3);*/
+    fclose(file);*/
 
     // Save temperature to file
-    file3 = fopen("temperature.dat", "w");
+    file = fopen("temperature.dat", "w");
     for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++)
     {
 
     	current_time = i*timestep;
-    	fprintf(file3, "%.3f \t %e\n", current_time, temperature[i]);
+    	fprintf(file, "%.3f \t %e\n", current_time, temperature[i]);
     }
-    fclose(file3);
+    fclose(file);
 
-    file3 = fopen("temperature_avg.dat", "w");
+    file = fopen("temperature_avg.dat", "w");
     for (int i = 0; i < nbr_of_timesteps; i++) {
         current_time = i*timestep;
-        fprintf(file3, "%.3f \t %e\n", current_time, temperature_avg[i]);
+        fprintf(file, "%.3f \t %e\n", current_time, temperature_avg[i]);
     }
-    fclose(file3);
+    fclose(file);
 
     // Save pressure to file
-    file3 = fopen("pressure.dat", "w");
+    file = fopen("pressure.dat", "w");
     for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++)
     {
     	current_time = i*timestep;
-    	fprintf(file3, "%.3f \t%e \n", current_time, pressure[i]);
+    	fprintf(file, "%.3f \t%e \n", current_time, pressure[i]);
     }
-    fclose(file3);
+    fclose(file);
 
-    file3 = fopen("pressure_avg.dat", "w");
+    file = fopen("pressure_avg.dat", "w");
     for (int i = 0; i < nbr_of_timesteps; i++) {
         current_time = i*timestep;
-        fprintf(file3, "%.3f \t %e\n", current_time, pressure_avg[i]);
+        fprintf(file, "%.3f \t %e\n", current_time, pressure_avg[i]);
     }
-    fclose(file3);
+    fclose(file);
 
-    free(energy_kin); energy_kin = NULL;
-    free(energy); energy = NULL;
-    free(disp_arr); disp_arr = NULL;
-	free(virial); virial = NULL;
-	free(temperature_avg); temperature_avg = NULL;
-	free(pressure_avg); pressure_avg = NULL;
+    free(energy_kin);		energy_kin = NULL;
+    free(energy); 			energy = NULL;
+    free(disp_arr); 		disp_arr = NULL;
+	free(virial); 			virial = NULL;
+	free(temperature_avg); 	temperature_avg = NULL;
+	free(pressure_avg);		pressure_avg = NULL;
 
     return 0;
 }
