@@ -9,6 +9,6 @@ plot(data(4:end,1), data(4:end,2), '-');
 
 % labels
 xlabel('Time / [ps]')
-ylabel('Average pressure / [eV/A]')
+ylabel('Pressure / [eV/A]')
 % title
-title('Average pressure')
+title('Pressure')
