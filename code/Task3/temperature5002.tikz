@@ -15,13 +15,12 @@ at={(0.758in,0.481in)},
 scale only axis,
 xmin=0,
 xmax=1,
-xlabel={Time / [$\unit{ps}$]},
+xlabel={Time / [ps]},
 ymin=700,
 ymax=1600,
-ylabel={Average temperature / [$\unit{\bar{K}}$]},
-label style ={font=\Large},
+ylabel={Average temperature / [K]},
 axis background/.style={fill=white},
-title style={font=\bfseries\Huge},
+title style={font=\bfseries},
 title={Average temperature}
 ]
 \addplot [color=mycolor1,solid,forget plot]
