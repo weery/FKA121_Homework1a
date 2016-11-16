@@ -9,7 +9,7 @@ sizeD=size(data);
 %plot
 figure;
 
-steplength = 1;
+steplength = 10;
 L = size(data);
 
 traj=randi([1, (L(2)-1)/3], 3, 1);

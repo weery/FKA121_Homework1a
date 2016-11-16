@@ -300,5 +300,6 @@ int main()
 
 double boundary_condition(double u, double L)
 {
-    return fmod(u,L);
+    double temp = fmod(u,L);
+    return (temp > 0) ? temp : -temp;
 }
