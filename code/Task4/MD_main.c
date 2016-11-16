@@ -11,7 +11,7 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 5000
+#define nbr_of_timesteps 1e4
 #define nbr_of_timesteps_eq 4000
 #define nbr_of_dimensions 3
 
@@ -34,7 +34,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 1800.0+273.15, 700.0+273.15 };
 
     FILE *file1;
     FILE *file2;
@@ -287,10 +287,10 @@ int main()
     }
     fclose(file3);
 
-    free(energy_kin); energy_kin=NULL;
-    free(energy); energy=NULL;
-    free(disp_arr); disp_arr=NULL;
-	free(virial); virial=NULL;
+    free(energy_kin); energy_kin = NULL;
+    free(energy); energy = NULL;
+    free(disp_arr); disp_arr = NULL;
+	free(virial); virial = NULL;
 	free(temperature_avg); temperature_avg = NULL;
 	free(pressure_avg); pressure_avg = NULL;
 
