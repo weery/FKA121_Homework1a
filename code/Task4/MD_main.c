@@ -35,6 +35,8 @@ int main()
                             // unit cell
     double timestep;
     double temperature_eq[] = { 1800.0+273.15, 700.0+273.15 };
+    double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
+    double isothermal_compressibility = 0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
     FILE *file1;
     FILE *file2;
@@ -93,23 +95,18 @@ int main()
     }
 
 
-    for (int i = 0; i < nbr_of_particles; i++){
-        for (int j = 0; j < nbr_of_dimensions; j++){
-            qq(0,i,j)=q[i][j];
-        }
-    }
-
-
     get_forces_AL(f,q,cell_length,nbr_of_particles);
 
     /* Simulation */
     /* Equilibrium stage */
-    double energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
+    // double energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
     // Kinetic energy
     double energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
     double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
     double inst_temperature_eq;
-    double alpha = 1;
+    double inst_pressure_eq;
+    double alpha_T = 1;
+    double alpha_P = 1;
     for (int equil = 0; equil < 2; equil++) {
         for (int i = 1; i < nbr_of_timesteps_eq; i++)
         {
@@ -141,7 +138,7 @@ int main()
 
             /* Calculate energy */
             // Potential energy
-            energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
+            // energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
             // Kinetic energy
             energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
 
@@ -149,18 +146,38 @@ int main()
 
 
             inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
+            inst_pressure_eq = instantaneous_pressure(virial_eq, inst_temperature_eq,
+                nbr_of_particles, volume);
 
 
-            alpha = 1+1.0/100.0*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            //alpha = 1+1/(double)(nbr_of_timesteps)*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
+            alpha_T = 1 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
+            //alpha_T = 1+1/(double)(nbr_of_timesteps)*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
 
+            alpha_P = 1 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
 
-            //printf("Alpha: %.4f\n",alpha );
+            // Scale velocities
             for (int j = 0; j < nbr_of_particles; j++){
                 for (int k = 0; k < nbr_of_dimensions; k++){
-                    v[j][k] *= sqrt(alpha);
+                    v[j][k] *= sqrt(alpha_T);
                 }
             }
+
+            // Scale positions and volume
+            cell_length *= pow(alpha_P, 1.0/3.0);
+            volume = pow(cell_length, 3);
+            for (int j = 0; j < nbr_of_particles; j++) {
+                for (int k = 0; k < nbr_of_dimensions; k++) {
+                    q[j][k] *= pow(alpha_P, 1.0/3.0);
+                }
+            }
+
+        }
+    }
+
+
+    for (int i = 0; i < nbr_of_particles; i++){
+        for (int j = 0; j < nbr_of_dimensions; j++){
+            qq(0,i,j)=q[i][j];
         }
     }
 
