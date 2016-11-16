@@ -473,9 +473,8 @@ double averaged_temperature(double* kinetic_energy,int nbr_of_particles,double t
 /* Calculation of instantaneous pressure, se 5.3 in molecular dynamics*/
 double instantaneous_pressure(double virial, double temperature, int nbr_of_particles,double volume)
 {
-	double pressure=0;
-	pressure += virial + temperature *k_b*nbr_of_particles/volume;
-	return pressure;
+	//double pressure = 0;
+	return (virial + temperature *k_b*nbr_of_particles) / volume;
 }
 
 /* Calculation of pressure based on averaged virial */

@@ -5,7 +5,7 @@ data = importdata('pressure.dat');
 
 % plot
 figure;
-plot(data(:,1), data(:,2), '-');
+plot(data(4:end,1), data(4:end,2), '-');
 
 % labels
 xlabel('Time / [ps]')
