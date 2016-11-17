@@ -107,7 +107,7 @@ $C_v\left[AL\right]:\unit[24.20]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}
 \noindent From our MD simulations we obtained the following values for $C_V$ when using the potential and kinetic energy fluctuations respectively.
 \begin{table}[h!]
 	\centering
-	\caption{}
+	\caption{Heat capacity obtained by measuring energy fluctuations.}
 	\begin{tabular}{l|cc}
 		\hline \textbf{Temperature} & \textbf{500$^\circ$ C} & \textbf{700$^\circ$ C} \\ \hline
 		$C_V / (\unit{eV/kg\,K})$ (kinetic) & $5.819521 \cdot 10^{-2}$ & $5.056438 \cdot 10^{-2}$ \\
@@ -115,6 +115,26 @@ $C_v\left[AL\right]:\unit[24.20]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}
 	\end{tabular}
 	\label{tab:prob5}
 \end{table}
+
+\section*{Problem 6}
+
+When instead using the relation
+\begin{equation}
+	C_V = \left( \frac{\partial E}{\partial T} \right)_{N,V}
+\end{equation}
+to compute the heat capacity, and approximate it with a difference quota, we obtain the results found in the table below.
+
+\begin{table}[h!]
+	\centering	
+	\caption{Heat capacity obtained by approximating the partial energy derivative with respect to the temperature.}
+	\begin{tabular}{l|cc}
+		\hline \textbf{Temperature} & \textbf{500$^\circ$ C} & \textbf{700$^\circ$ C} \\ \hline
+		$C_V / (\unit{eV/kg\,K})$ & $6.436 \cdot 10^{-2}$ & $8.131 \cdot 10^{-2}$ \\ \hline
+	\end{tabular}
+	\label{tab:prob6}
+\end{table}
+
+If we compare these results to those from the previous problem we see that they are slightly larger and the result for 700 degrees deviates by a larger margin. It's possible that a longer equilibration time would yield a more stable temperature than was obtained now and therefore a more accurate heat capacity. A longer measuring time would also increase the accuracy of the result, as well as doing more simulation and averaging the different results. A $\Delta T$ of 5$^\circ$ C was used here, but further experiementing with this parameter could yield a better result as well.
 
 \section*{Problem 7}
 
@@ -137,7 +157,7 @@ $C_v\left[AL\right]:\unit[24.20]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}
     \captionsetup[subfigure]{justification=centering}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{graphics/task8/integral.png}
+        %\includegraphics[width=\textwidth]{graphics/task8/integral.png}
     \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering

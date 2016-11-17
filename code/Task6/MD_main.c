@@ -35,7 +35,7 @@ int main()
                             // unit cell
     double timestep;
     double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
-    double delta_temperature[] = { -5.0, 5.0 };
+    double delta_temperature[] = { -10.0, 10.0 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
 
     FILE *file;
