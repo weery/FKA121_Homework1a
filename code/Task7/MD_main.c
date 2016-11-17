@@ -16,11 +16,7 @@
 #define nbr_of_dimensions 3
 
 double boundary_condition(double,double);
-double[] radial_distribution(double[][], double);
-double[][] calulcate_distances(double[][], int, int );
-double min_distance(double[][], int, int);
-double max_distance(double[][], int, int);
-
+int get_bin(double , double , double , double );
 
 
 
@@ -43,9 +39,7 @@ int main()
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
     double isothermal_compressibility = 0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
-    FILE *file1;
-    FILE *file2;
-    FILE *file3;
+    FILE *file;
 
 
     /* Current displacement, velocities, and acceleratons */
@@ -250,66 +244,89 @@ int main()
         }
     }
 
-    /* Save data to file*/
-    file1 = fopen("displacement.dat","w");
 
-    double current_time;
-    for (int i = 0; i < nbr_of_timesteps; i ++)
+
+    // COPY OVER THIS TODO
+    // Create Histogram
+
+    double distances[nbr_of_particles][nbr_of_particles] = {0};
+    for (int i =0 ; i < nbr_of_particles; i++)
     {
-        current_time = i*timestep;
-        fprintf(file1, "%.4f \t", current_time );
-        for (int j = 0; j < nbr_of_particles; j++)
+        for (int j =0 ; j < nbr_of_particles; j++)
         {
-            for (int k = 0; k < nbr_of_dimensions; k++)
+            for (int d = 0; d < nbr_of_dimensions; d++)
             {
-                fprintf(file1, "%.4f \t", qq(i,j,k));
+                distances[i][j] += pow(q[i][d]-q[j][d],2);
+            }
+            distances[i][j] = sqrt(distances[i][j]);
+            printf("%.8f \n",distances[i][j] );
+        }
+    }
+
+    double min = 1e10;
+    double dist = 0;
+    for (int i = 1; i < nbr_of_particles; i++)
+        for (int j = i+1; j< nbr_of_particles; j++)
+        {
+            dist = distances[i][j];
+            if (dist < min)
+            {
+                min = dist;
+                printf("%i, %i, %.8f \n", i,j,dist );
             }
         }
-        fprintf(file1, "\n");
-    }
-    fclose(file1);
+    double max = 0;
+    dist = 0;
+    for (int i = 1; i < nbr_of_particles; i++)
+        for (int j = i+1; j< nbr_of_particles; j++)
+        {
+            dist = distances[i][j];
+            if (dist > max)
+            {
+                max = dist;
+                printf("%i, %i, %.8f \n", i,j,dist );
+            }
+        }
 
-    /* Save energies to file */
-    file2 = fopen("energy.dat","w");
+    int k_bins  = 100;
+    printf("Max: %.8f \n", max );
+    printf("Min: %.8f \n", min );
 
-    for (int i = 0; i < nbr_of_timesteps; i ++)
+    double d_r = (max-min)/(1.0*k_bins);
+
+    printf("D_r: %.8f \n",d_r );
+
+    int bins[k_bins];
+    for (int i = 0; i < k_bins; i++)
+        bins[i]=0;
+
+    // Use only upper triangle of matrix
+    for (int i = 1; i < nbr_of_particles; i++)
+        for (int j = 1+i; j < nbr_of_particles; j++)
+        {
+            int bin = get_bin(distances[i][j],min,max,d_r);
+            bins[bin]++;
+        }
+
+
+
+        for (int i = 0; i < k_bins;i++)
+        {
+            printf("%i: %i \n",i,bins[i]);
+        }
+
+
+    /* Save data to file*/
+    file = fopen("histogram.dat","w");
+
+    for (int i = 0; i < k_bins; i ++)
     {
-        current_time = i*timestep;
-        fprintf(file2, "%.4f \t", current_time);
-        fprintf(file2, "%.4f \t", energy[i]);
-        fprintf(file2, "%.4f \n", energy_kin[i]);
+        fprintf(file, "%i\n",bins[i]);
     }
-    fclose(file2);
 
-    /* Save energies to file */
-    file3 = fopen("virial.dat","w");
+    fclose(file);
+    // TO THIS ISH TODO
 
-    for (int i = 0; i < nbr_of_timesteps; i ++)
-    {
-        current_time = i*timestep;
-        fprintf(file3, "%.4f \t", current_time);
-        fprintf(file3, "%.4f \n", virial[i]);
-    }
-    fclose(file3);
-
-    // Save temperature to file
-    file3 = fopen("temperature.dat", "w");
-    for (int i = 0; i < nbr_of_timesteps; i++)
-    {
-
-    	current_time = i*timestep;
-    	fprintf(file3, "%.3f \t %e\n", current_time, temperature_avg[i]);
-    }
-    fclose(file3);
-
-    // Save pressure to file
-    file3 = fopen("pressure.dat", "w");
-    for (int i = 0; i < nbr_of_timesteps; i++)
-    {
-    	current_time = i*timestep;
-    	fprintf(file3, "%.3f \t%e \n", current_time, pressure_avg[i]);
-    }
-    fclose(file3);
 
     free(energy_kin); energy_kin = NULL;
     free(energy); energy = NULL;
@@ -321,64 +338,18 @@ int main()
     return 0;
 }
 
-double max_distance(double[dim1][dim2] distances, int dim1, int dim2)
+int get_bin(double val , double min , double max , double  d_r)
 {
-    double max = 0;
-    double dist = 0;
-    for (int i = 0; i < dim1; i++)
-        for (int j = 0; j< dim2; j++)
-        {
-            dist = distances[i][j];
-            if (dist > max)
-                max = dist;
-        }
-    return max;
-}
-
-double min_distance(double[dim1][dim2] distance, int dim1, int dim2)
-{
-    double min = 0;
-    double dist = 0;
-    for (int i = 0; i < dim1; i++)
-        for (int j = 0; j< dim2; j++)
-        {
-            dist = distances[i][j];
-            if (dist > max)
-                max = dist;
-        }
-    return max;
-
-}
-
-double get_bin(double val, double max, double min, double d_r)
-{
-    
-}
-
-double[] radial_distribution(double[nbr_of_particles][nbr_of_dimensions] q, int k_bins)
-{
-    double min = min_distance(q,nbr_of_particles,nbr_of_dimensions);
-    double max = max_distance(q,nbr_of_particles,nbr_of_dimensions);
-    double d_r = (max-min)/(1.0*k_bins);
-
-}
-
-double[][] calulcate_distances(double[nbr_of_particles][nbr_of_dimensions] q, int nbr_of_particles, int nbr_of_dimensions)
-{
-    double distance[nbr_of_particles][nbr_of_particles] = {0};
-    for (int i =0 ; i < nbr_of_particles; i++)
+    int bin =0;
+    double current=min;
+    while (current < val)
     {
-        for (int j =0 ; j < nbr_of_particles; j++)
-        {
-            for (int d = 0; d < nbr_of_particles; d++)
-            {
-                distance[i][j] += pow(q[i][d]-q[j][d],2);
-            }
-            distance[i][j] = sqrt(distance[i][j]);
-        }
+        current += d_r;
+        bin++;
     }
-    return distance;
+    return bin;
 }
+
 
 
 double boundary_condition(double u, double L)
