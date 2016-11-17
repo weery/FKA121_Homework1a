@@ -76,26 +76,21 @@ In order to set the system to a certain temperature, a technique involving scali
 
 
 \section*{Problem 5}
-$\unit[1]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}}$\\
 
+$\unit[1]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}}$ \\
 $C_v\left[AL\right]:\unit[24.20]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}}$
 
-As a starting point we first look at scattering from a hard-sphere
-potential. We also consider the Lennard--Jones potential, which is depicted
-in Figure~\ref{fig1}. (\emph{Always refer to Figures in the text.})
-
-\begin{figure}[!ht]
-\begin{center}
-  \includegraphics[width=0.7\textwidth]{template_files/LJ} 
-  \caption{The Lennard--Jones potential.
-  Make sure you label and have units on all axes! Also make sure that labels etc.\
-  are legible and that, if you print in black and white, that you use different line
-  styles when required to differentiate between curves. In \textsc{matlab}
-  you can export any figure to an .eps file from File $\rightarrow$
-  Export\ldots\ in the Figure window.}
-  \label{fig1}
-\end{center}
-\end{figure}
+\noindent From our MD simulations we obtained the following values for $C_V$ when using the potential and kinetic energy fluctuations respectively.
+\begin{table}[h!]
+	\centering
+	\caption{}
+	\begin{tabular}{l|cc}
+		\hline \textbf{Temperature} & \textbf{500$^\circ$ C} & \textbf{700$^\circ$ C} \\ \hline
+		$C_V / (\unit{eV/kg\,K})$ (kinetic) & $5.819521 \cdot 10^{-2}$ & $5.056438 \cdot 10^{-2}$ \\
+		$C_V / (\unit{eV/kg\,K})$ (potential) & $5.836188 \cdot 10^{-2}$ & $5.056541 \cdot 10^{-2}$ \\ \hline
+	\end{tabular}
+	\label{tab:prob5}
+\end{table}
   
 \section*{Problem 2}
 
