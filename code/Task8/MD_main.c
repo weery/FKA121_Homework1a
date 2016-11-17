@@ -195,7 +195,20 @@ int main()
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
+        int n_x = 20;
+        int n_y = 20;
+        int n_z = 20;
 
+        double factor = PI*2.0/cell_length;
+
+        double qS[n_x][n_y][n_z][3];
+        for (int i = 0; i < n_x; i++)
+            for (int j = 0; j < n_y ; j++)
+                for (int k = 0; k < n_z; k++){
+                        qS[i][j][k][0]=i*factor;
+                        qS[i][j][k][1]=j*factor;
+                        qS[i][j][k][2]=k*factor;
+                    }
     /* Simulation after equilibrium*/
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
@@ -251,90 +264,107 @@ int main()
                 qq(i,j,k)=q[j][k];
             }
         }
+
     } // equilibration/simulation
 
-    int n_x = 20;
-    int n_y = 20;
-    int n_z = 20;
 
-    double factor = PI*2.0/cell_length;
+    int n_t = 10;
 
-    double qS[n_x][n_y][n_z][3];
-    for (int i = 0; i < n_x; i++)
-        for (int j = 0; j < n_y ; j++)
-            for (int k = 0; k < n_z; k++){
-                    qS[i][j][k][0]=i*factor;
-                    qS[i][j][k][1]=j*factor;
-                    qS[i][j][k][2]=k*factor;
-                }
 
-    double s[n_x][n_y][n_z];
-    for (int i = 0; i < n_x; i++)
-        for (int j = 0; j < n_y ; j++)
-            for (int k = 0; k < n_z; k++)
-            {
-                if ( !((i==j) && (i==k) && (i==0))){
-                    double complex sum = 0;
-                    for (int r=0; r < nbr_of_particles; r++)
-                    {
-                        double complex expo=0;
-                        for (int d = 0; d < nbr_of_dimensions; d++)
+    #define s(t,i,j,k) (s_arr[n_z*n_y*n_x*t+n_z*n_y*i+n_z*j+k])
+    double* s_arr = (double*)malloc(n_t*n_x*n_y*n_z*sizeof(double));
+
+    printf("Imhere\n");
+    for (int t = 0; t < n_t; t++ )
+    {
+        for (int i = 0; i < n_x; i++)
+            for (int j = 0; j < n_y ; j++)
+                for (int k = 0; k < n_z; k++)
+                {
+                    if ( !((i==j) && (i==k) && (i==0))){
+                        double complex sum = 0;
+                        for (int r=0; r < nbr_of_particles; r++)
                         {
-                            expo+= qS[i][j][k][d]*q[r][d];
+                            double complex expo=0;
+                            for (int d = 0; d < nbr_of_dimensions; d++)
+                            {
+                                expo+= qS[i][j][k][d]*qq(t,r,d);
+                            }
+                            expo=expo*I;
+                            sum+= cexp(expo);
                         }
-                        expo=expo*I;
-                        sum+= cexp(expo);
+                        sum = cabs(sum);
+                        sum=sum*sum/nbr_of_particles;
+                        s(t,i,j,k)=sum;
                     }
-                    sum = cabs(sum);
-                    sum=sum*sum/nbr_of_particles;
-                    s[i][j][k]=sum;
                 }
-            }
-
-    double data[n_x*n_y*n_z];
-    double dis[n_x*n_y*n_z];
+        }
+    printf("Imhere again \n");
+    double data[n_t][n_x*n_y*n_z];
+    double dis[n_t][n_x*n_y*n_z];
     int iterator =0;
-    for (int i = 0; i < n_x; i++)
-        for (int j = 0; j < n_y ; j++)
-            for (int k = 0; k < n_z; k++)
-            {
-                dis[iterator] =sqrt(1.0*i*i+1.0*j*j+1.0*k*k);
-                data[iterator] = s[i][j][k];
-                iterator++;
-            }
+    for (int t = 0; t < n_t; t++){
+        iterator =0;
+        for (int i = 0; i < n_x; i++)
+            for (int j = 0; j < n_y ; j++)
+                for (int k = 0; k < n_z; k++)
+                {
+                    dis[t][iterator] =sqrt(1.0*i*i+1.0*j*j+1.0*k*k);
+                    data[t][iterator] =s(t,i,j,k);
+                    iterator++;
+                }
+    }
+
+printf("Imhere and yet again\n");
     double max =0;
     double min = 1e10;
-    for (int i = 0; i < n_x*n_y*n_z; i++ )
-    {
-        if (dis[i] > max)
-            max = dis[i];
-        if (dis[i] < min)
-            min = dis[i];
-    }
+        for (int i = 0; i < n_x*n_y*n_z; i++ )
+        {
+            if (dis[0][i] > max)
+                max = dis[0][i];
+            if (dis[0][i] < min)
+                min = dis[0][i];
+        }
 
     int k_bins=100;
     double d_r = (max-min)/(1.0*k_bins);
-    int bins[k_bins];
+    int bins[n_t][k_bins];
+    for (int t = 0; t < n_t; t++)
+        for (int i = 0; i < n_x*n_y*n_z; i++)
+        {
+            int bin = get_bin(data[t][i],min,max,d_r);
+            bins[t][bin]++;
+        }
+
+
+    double BINS[k_bins];
     for (int i = 0; i < n_x*n_y*n_z; i++)
     {
-        int bin = get_bin(data[i],min,max,d_r);
-        bins[bin]++;
+        double sum=0;
+        for (int t = 0; t < n_t; t++)
+        {
+            sum+=bins[t][i];
+        }
+        sum/=(n_t*1.0);
+        BINS[i]=sum;
     }
 
     file = fopen("data.dat","w");
     for (int i = 0; i < k_bins; i++)
     {
-        fprintf(file, "%e \t %i \n", (double)(min+d_r*i*1.0), bins[i]);
+        fprintf(file, "%e \t %e \n", (double)(min+d_r*i*1.0), BINS[i]);
     }
 
     fclose(file);
+
     /*
-    file = fopen("data.dat","w");
+    file = fopen("data2.dat","w");
     for (int i = 0; i < n_x*n_y*n_z; i ++)
     {
         fprintf(file, "%e \t %e \n",dis[i],data[i] );
     }
-    fclose(file);*/
+    fclose(file);
+    */
 
     free(energy_kin);		energy_kin = NULL;
     free(energy); 			energy = NULL;
