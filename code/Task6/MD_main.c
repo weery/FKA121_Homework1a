@@ -35,6 +35,7 @@ int main()
                             // unit cell
     double timestep;
     double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double delta_temperature[] = { -5.0, 5.0 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
     double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
@@ -46,22 +47,19 @@ int main()
     double v[nbr_of_particles][nbr_of_dimensions] = { 0 }; // Velocities
     double f[nbr_of_particles][nbr_of_dimensions] = { 0 }; // Forces
 
-    double heat_capacity_pot, heat_capacity_kin;
+    double heat_capacity;
+    double energy_avg[2] = { 0 };
+    double temperature_avg[2] = { 0 };
 
     /* Allocate memory for large vectors */
     /* Simulate 3 dimensional data by placing iniitalizeing a 1-dimensional array*/
     #define qq(i,j,k) (disp_arr[nbr_of_particles*nbr_of_dimensions*i+nbr_of_dimensions*j+k])
-    double* disp_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_dimensions*sizeof(double));
+    //double* disp_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_dimensions*sizeof(double));
 
     double* energy_pot 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* energy_kin 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
-    double* virial 			= (double*) malloc(nbr_of_timesteps * sizeof(double));
-    double* temperature_avg = (double*) malloc(nbr_of_timesteps * sizeof(double));
-    double* pressure_avg 	= (double*) malloc(nbr_of_timesteps * sizeof(double));
-    //double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
-    //double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
 
-    //TODO go over parameters again
+
     /* Initialize parameters*/
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
@@ -73,6 +71,7 @@ int main()
     volume 					= pow(cell_length, 3);
 
     // Initialize all displacements, for all times, as 0
+    /*
     for (int i  = 0; i < nbr_of_timesteps; i++){
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
@@ -80,6 +79,7 @@ int main()
             }
         }
     }
+    */
 
     /* Put atoms on lattice */
     init_fcc(q, 4, lattice_param);
@@ -111,15 +111,102 @@ int main()
 
     //temperature[0]  = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
     //pressure[0]     = instantaneous_pressure(virial_eq, temperature[0], nbr_of_particles, volume);
+    for (int d = 0; d < 2; d++) {
 
-    for (int equil = 0; equil < 2; equil++) {
-        for (int i = 1; i < nbr_of_timesteps_eq; i++)
+        for (int equil = 0; equil < 2; equil++) {
+
+            double target_temp = temperature_eq[equil] + delta_temperature[d];
+
+            for (int i = 1; i < nbr_of_timesteps_eq; i++)
+            {
+                /** Verlet algorithm **/
+                /* Half step for velocity */
+                for (int j = 0; j < nbr_of_particles; j++){
+                	for (int k = 0; k < nbr_of_dimensions; k++){
+                		v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+                    }
+                }
+
+                /* Update displacement*/
+                for (int j = 0; j < nbr_of_particles; j++){
+                    for (int k = 0; k < nbr_of_dimensions; k++){
+                        q[j][k] += timestep * v[j][k];
+                    }
+                }
+
+                /* Forces */
+                get_forces_AL(f,q,cell_length,nbr_of_particles);
+
+                /* Final velocity*/
+                for (int j = 0; j < nbr_of_particles; j++){
+                    for (int k = 0; k < nbr_of_dimensions; k++){
+                        v[j][k] += timestep * 0.5* f[j][k]/m_AL;
+                    }
+                }
+
+                /* Calculate energy */
+                // Kinetic energy
+                energy_kin_eq = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
+
+                virial_eq = get_virial_AL(q, cell_length, nbr_of_particles);
+
+
+                inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
+                //temperature[equil*(nbr_of_timesteps_eq-1) + i] = inst_temperature_eq;
+                inst_pressure_eq = instantaneous_pressure(virial_eq, inst_temperature_eq,
+                    nbr_of_particles, volume);
+                //pressure[equil*(nbr_of_timesteps_eq-1) + i] = inst_pressure_eq;
+
+
+                // Update alhpas
+                alpha_T = 1.0 + 0.01*(target_temp-inst_temperature_eq)/inst_temperature_eq;
+                alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+
+                // DEBUG:alpha
+                //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
+
+                // Scale velocities
+                for (int j = 0; j < nbr_of_particles; j++){
+                    for (int k = 0; k < nbr_of_dimensions; k++){
+                        v[j][k] *= sqrt(alpha_T);
+                    }
+                }
+
+                // Scale positions and volume
+                cell_length *= pow(alpha_P, 1.0/3.0);
+                volume = pow(cell_length, 3);
+                for (int j = 0; j < nbr_of_particles; j++) {
+                    for (int k = 0; k < nbr_of_dimensions; k++) {
+                        q[j][k] *= pow(alpha_P, 1.0/3.0);
+                    }
+                }
+
+            }
+        }
+
+
+        /*
+        for (int i = 0; i < nbr_of_particles; i++){
+            for (int j = 0; j < nbr_of_dimensions; j++){
+                qq(0,i,j)=q[i][j];
+            }
+        }
+        */
+
+        // Compute energies, temperature etc. at equilibrium
+        energy_pot[0] = get_energy_AL(q, cell_length, nbr_of_particles);
+        energy_kin[0] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
+        //virial[0] = get_virial_AL(q, cell_length, nbr_of_particles);
+
+
+        /* Simulation after equilibrium*/
+        for (int i = 1; i < nbr_of_timesteps; i++)
         {
             /** Verlet algorithm **/
             /* Half step for velocity */
             for (int j = 0; j < nbr_of_particles; j++){
-            	for (int k = 0; k < nbr_of_dimensions; k++){
-            		v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+                for (int k = 0; k < nbr_of_dimensions; k++){
+                    v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
                 }
             }
 
@@ -130,156 +217,63 @@ int main()
                 }
             }
 
-            /* Forces */
-            get_forces_AL(f,q,cell_length,nbr_of_particles);
+            /* Update Forces */
+            get_forces_AL(f, q, cell_length, nbr_of_particles);
 
             /* Final velocity*/
             for (int j = 0; j < nbr_of_particles; j++){
                 for (int k = 0; k < nbr_of_dimensions; k++){
-                    v[j][k] += timestep * 0.5* f[j][k]/m_AL;
+                    v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
                 }
             }
 
             /* Calculate energy */
+            // Potential energy
+            energy_pot[i] = get_energy_AL(q, cell_length, nbr_of_particles);
             // Kinetic energy
-            energy_kin_eq = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
+            energy_kin[i] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
-            virial_eq = get_virial_AL(q, cell_length, nbr_of_particles);
-
-
-            inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
-            //temperature[equil*(nbr_of_timesteps_eq-1) + i] = inst_temperature_eq;
-            inst_pressure_eq = instantaneous_pressure(virial_eq, inst_temperature_eq,
-                nbr_of_particles, volume);
-            //pressure[equil*(nbr_of_timesteps_eq-1) + i] = inst_pressure_eq;
+            //virial[i] = get_virial_AL(q, cell_length, nbr_of_particles);
 
 
-            // Update alhpas
-            alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
-
-            // DEBUG:alpha
-            //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
-
-            // Scale velocities
+            /* Save current displacements to array*/
+            /*
             for (int j = 0; j < nbr_of_particles; j++){
                 for (int k = 0; k < nbr_of_dimensions; k++){
-                    v[j][k] *= sqrt(alpha_T);
+                    qq(i,j,k)=q[j][k];
                 }
             }
+            */
+            
+        } // equilibration/simulation
 
-            // Scale positions and volume
-            cell_length *= pow(alpha_P, 1.0/3.0);
-            volume = pow(cell_length, 3);
-            for (int j = 0; j < nbr_of_particles; j++) {
-                for (int k = 0; k < nbr_of_dimensions; k++) {
-                    q[j][k] *= pow(alpha_P, 1.0/3.0);
-                }
-            }
+        // Compute heat capacity
+        temperature_avg[d] = averaged_temperature(energy_kin, nbr_of_particles, nbr_of_timesteps-1);
+        // Compute average total energy
+        for (int i = 0; i < nbr_of_timesteps; i++)
+            energy_avg[d] += energy_pot[i] + energy_kin[i];
+        energy_avg[d] /= nbr_of_timesteps;
 
-        }
+        printf("Temp: %f\nAverage total energy: %.10f\n", temperature_avg[d], energy_avg[d]);
+
     }
-
-    printf("Equilibration done.\n");
-    printf("Cell length: %.8f \n", cell_length);
-
-    for (int i = 0; i < nbr_of_particles; i++){
-        for (int j = 0; j < nbr_of_dimensions; j++){
-            qq(0,i,j)=q[i][j];
-        }
-    }
-
-    // Compute energies, temperature etc. at equilibrium
-    energy_pot[0] = get_energy_AL(q, cell_length, nbr_of_particles);
-    virial[0] = get_virial_AL(q, cell_length, nbr_of_particles);
-    energy_kin[0] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
-    temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
-    pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
-    	nbr_of_particles, volume);
-
-    /* Simulation after equilibrium*/
-    for (int i = 1; i < nbr_of_timesteps; i++)
-    {
-        /** Verlet algorithm **/
-        /* Half step for velocity */
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
-            }
-        }
-
-        /* Update displacement*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                q[j][k] += timestep * v[j][k];
-            }
-        }
-
-        /* Update Forces */
-        get_forces_AL(f, q, cell_length, nbr_of_particles);
-
-        /* Final velocity*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
-            }
-        }
-
-        /* Calculate energy */
-        // Potential energy
-        energy_pot[i] = get_energy_AL(q, cell_length, nbr_of_particles);
-        // Kinetic energy
-        energy_kin[i] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
-
-        virial[i] = get_virial_AL(q, cell_length, nbr_of_particles);
-
-		// Temperature
-        temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles, i);
-        /*temperature[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_temperature(energy_kin[i],
-            nbr_of_particles);*/
-
-
-        // Pressure
-        pressure_avg[i] = averaged_pressure(virial, energy_kin, volume, i);
-        /*pressure[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_pressure(virial[i],
-            temperature[2*(nbr_of_timesteps_eq-1) + i],
-            nbr_of_particles, volume);*/
-
-
-        /* Save current displacements to array*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                qq(i,j,k)=q[j][k];
-            }
-        }
-        
-    } // equilibration/simulation
 
     // Compute heat capacity
-    heat_capacity_kin = calculate_heat_capacity_kin(energy_kin, temperature_eq[1],
-        nbr_of_particles, nbr_of_timesteps);
-    heat_capacity_pot = calculate_heat_capacity_pot(energy_pot, temperature_eq[1],
-        nbr_of_particles, nbr_of_timesteps);
+    heat_capacity = (energy_avg[1]-energy_avg[0])/(temperature_avg[1]-temperature_avg[0]);
 
-    printf("Temp: %f\nHeat capacity: %.10f \t %.10f\n", temperature_eq[1],
-    	heat_capacity_kin, heat_capacity_pot);
+    printf("heat capacity: %f\n", heat_capacity);
 
     // Save results to file
     file = fopen("heat_capacity.dat", "w");
-    fprintf(file, "%.2f\t%e\t%e\n", temperature_eq[1],
-    	heat_capacity_kin, heat_capacity_pot);
+    fprintf(file, "%.2f\t%e\n", temperature_eq[1], heat_capacity);
     fclose(file);
 
 
 
     free(energy_kin);		energy_kin = NULL;
     free(energy_pot);		energy_pot = NULL;
-    free(disp_arr);			disp_arr = NULL;
-	free(virial);			virial = NULL;
-	free(temperature_avg);	temperature_avg = NULL;
-	free(pressure_avg);		pressure_avg = NULL;
-    //free(temperature);		temperature = NULL;
-    //free(pressure);			pressure = NULL;
+    //free(disp_arr);			disp_arr = NULL;
+	//free(virial);			virial = NULL;
 
     return 0;
 }
