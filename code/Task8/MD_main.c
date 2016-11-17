@@ -195,9 +195,9 @@ int main()
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
-        int n_x = 20;
-        int n_y = 20;
-        int n_z = 20;
+        int n_x = 10;
+        int n_y = 10;
+        int n_z = 10;
 
         double factor = PI*2.0/cell_length;
 
@@ -326,7 +326,7 @@ printf("Imhere and yet again\n");
                 min = dis[0][i];
         }
 
-    int k_bins=100;
+    int k_bins=20;
     double d_r = (max-min)/(1.0*k_bins);
     int bins[n_t][k_bins];
     for (int t = 0; t < n_t; t++)
@@ -349,6 +349,8 @@ printf("Imhere and yet again\n");
         BINS[i]=sum;
     }
 
+
+
     file = fopen("data.dat","w");
     for (int i = 0; i < k_bins; i++)
     {
@@ -357,14 +359,14 @@ printf("Imhere and yet again\n");
 
     fclose(file);
 
-    /*
+
     file = fopen("data2.dat","w");
     for (int i = 0; i < n_x*n_y*n_z; i ++)
     {
-        fprintf(file, "%e \t %e \n",dis[i],data[i] );
+        fprintf(file, "%i \t %e \n", bins[0][i], (double)(min+d_r*i*1.0));
     }
     fclose(file);
-    */
+
 
     free(energy_kin);		energy_kin = NULL;
     free(energy); 			energy = NULL;
