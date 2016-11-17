@@ -34,7 +34,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 500.0+273.15, 500.0+273.15 };
+    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
     double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
@@ -266,7 +266,7 @@ int main()
 
     // Save results to file
     file = fopen("heat_capacity.dat", "w");
-    fprintf(file, "%.2f \t %e \t %e \n", temperature_eq[1],
+    fprintf(file, "%.2f\t%e\t%e\n", temperature_eq[1],
     	heat_capacity_kin, heat_capacity_pot);
     fclose(file);
 
