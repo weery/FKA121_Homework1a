@@ -37,7 +37,6 @@ int main()
     double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
     double delta_temperature[] = { -5.0, 5.0 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
-    double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
     FILE *file;
 
@@ -51,10 +50,8 @@ int main()
     double energy_avg[2] = { 0 };
     double temperature_avg[2] = { 0 };
 
+
     /* Allocate memory for large vectors */
-    /* Simulate 3 dimensional data by placing iniitalizeing a 1-dimensional array*/
-    #define qq(i,j,k) (disp_arr[nbr_of_particles*nbr_of_dimensions*i+nbr_of_dimensions*j+k])
-    //double* disp_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_dimensions*sizeof(double));
 
     double* energy_pot 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* energy_kin 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
@@ -70,16 +67,7 @@ int main()
                                     			// structured in a block of 4x4x4 unit cells
     volume 					= pow(cell_length, 3);
 
-    // Initialize all displacements, for all times, as 0
-    /*
-    for (int i  = 0; i < nbr_of_timesteps; i++){
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                qq(i,j,k) = 0;
-            }
-        }
-    }
-    */
+    
 
     /* Put atoms on lattice */
     init_fcc(q, 4, lattice_param);
@@ -109,8 +97,6 @@ int main()
     double energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
     double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
 
-    //temperature[0]  = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
-    //pressure[0]     = instantaneous_pressure(virial_eq, temperature[0], nbr_of_particles, volume);
     for (int d = 0; d < 2; d++) {
 
         for (int equil = 0; equil < 2; equil++) {
@@ -152,18 +138,13 @@ int main()
 
 
                 inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
-                //temperature[equil*(nbr_of_timesteps_eq-1) + i] = inst_temperature_eq;
                 inst_pressure_eq = instantaneous_pressure(virial_eq, inst_temperature_eq,
                     nbr_of_particles, volume);
-                //pressure[equil*(nbr_of_timesteps_eq-1) + i] = inst_pressure_eq;
 
 
                 // Update alhpas
                 alpha_T = 1.0 + 0.01*(target_temp-inst_temperature_eq)/inst_temperature_eq;
-                alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
-
-                // DEBUG:alpha
-                //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
+                alpha_P = 1.0 - 0.01*(pressure_eq - inst_pressure_eq);
 
                 // Scale velocities
                 for (int j = 0; j < nbr_of_particles; j++){
@@ -185,18 +166,9 @@ int main()
         }
 
 
-        /*
-        for (int i = 0; i < nbr_of_particles; i++){
-            for (int j = 0; j < nbr_of_dimensions; j++){
-                qq(0,i,j)=q[i][j];
-            }
-        }
-        */
-
         // Compute energies, temperature etc. at equilibrium
         energy_pot[0] = get_energy_AL(q, cell_length, nbr_of_particles);
         energy_kin[0] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
-        //virial[0] = get_virial_AL(q, cell_length, nbr_of_particles);
 
 
         /* Simulation after equilibrium*/
@@ -233,17 +205,6 @@ int main()
             // Kinetic energy
             energy_kin[i] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
-            //virial[i] = get_virial_AL(q, cell_length, nbr_of_particles);
-
-
-            /* Save current displacements to array*/
-            /*
-            for (int j = 0; j < nbr_of_particles; j++){
-                for (int k = 0; k < nbr_of_dimensions; k++){
-                    qq(i,j,k)=q[j][k];
-                }
-            }
-            */
             
         } // equilibration/simulation
 
@@ -272,8 +233,6 @@ int main()
 
     free(energy_kin);		energy_kin = NULL;
     free(energy_pot);		energy_pot = NULL;
-    //free(disp_arr);			disp_arr = NULL;
-	//free(virial);			virial = NULL;
 
     return 0;
 }
