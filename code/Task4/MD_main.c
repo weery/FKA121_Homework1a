@@ -34,9 +34,9 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 1500.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
-    double isothermal_compressibility = 0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
+    double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
     FILE *file;
 
@@ -88,14 +88,14 @@ int main()
         for (int j = 0; j < nbr_of_dimensions; j++){
 
             // Initial perturbation from equilibrium
-            q[i][j] +=lattice_spacing * initial_displacement
+            q[i][j] += lattice_spacing * initial_displacement
                 * ((double)rand()/(double)RAND_MAX);
 
         }
     }
 
 
-    get_forces_AL(f,q,cell_length,nbr_of_particles);
+    get_forces_AL(f, q, cell_length, nbr_of_particles);
 
     /* Simulation */
     /* Equilibrium stage */
@@ -125,7 +125,6 @@ int main()
             for (int j = 0; j < nbr_of_particles; j++){
                 for (int k = 0; k < nbr_of_dimensions; k++){
                     q[j][k] += timestep * v[j][k];
-                    q[j][k] = boundary_condition(q[j][k],cell_length);
                 }
             }
 
@@ -141,9 +140,9 @@ int main()
 
             /* Calculate energy */
             // Kinetic energy
-            energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+            energy_kin_eq = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
-            virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
+            virial_eq = get_virial_AL(q, cell_length, nbr_of_particles);
 
 
             inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
@@ -154,8 +153,8 @@ int main()
 
 
             // Update alhpas
-            alpha_T = 1 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            alpha_P = 1 + 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+            alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
+            alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
 
             // DEBUG:alpha
             //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
@@ -179,8 +178,8 @@ int main()
         }
     }
 
-
-    printf("%.8f \n", cell_length);
+    printf("Equilibration done.\n");
+    printf("Cell length: %.8f \n", cell_length);
 
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
@@ -189,9 +188,9 @@ int main()
     }
 
     // Compute energies, temperature etc. at equilibrium
-    energy[0] = get_energy_AL(q,cell_length,nbr_of_particles);
-    virial[0] = get_virial_AL(q,cell_length,nbr_of_particles);
-    energy_kin[0] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+    energy[0] = get_energy_AL(q, cell_length, nbr_of_particles);
+    virial[0] = get_virial_AL(q, cell_length, nbr_of_particles);
+    energy_kin[0] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
@@ -211,12 +210,11 @@ int main()
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
                 q[j][k] += timestep * v[j][k];
-                q[j][k] = boundary_condition(q[j][k], cell_length);
             }
         }
 
         /* Update Forces */
-        get_forces_AL(f,q,cell_length,nbr_of_particles);
+        get_forces_AL(f, q, cell_length, nbr_of_particles);
 
         /* Final velocity*/
         for (int j = 0; j < nbr_of_particles; j++){
@@ -227,11 +225,11 @@ int main()
 
         /* Calculate energy */
         // Potential energy
-        energy[i] = get_energy_AL(q,cell_length,nbr_of_particles);
+        energy[i] = get_energy_AL(q, cell_length, nbr_of_particles);
         // Kinetic energy
-        energy_kin[i] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+        energy_kin[i] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
-        virial[i] = get_virial_AL(q,cell_length,nbr_of_particles);
+        virial[i] = get_virial_AL(q, cell_length, nbr_of_particles);
 
 		// Temperature
         temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles, i);
@@ -340,9 +338,3 @@ int main()
     return 0;
 }
 
-
-double boundary_condition(double u, double L)
-{
-    double temp = fmod(u,L);
-    return (temp > 0) ? temp : -temp;
-}
