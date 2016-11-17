@@ -13,4 +13,4 @@ figure;
 
 
 
-plot(data2(:,2),data2(:,1),'-')
+plot(data(:,1),data(:,2),'-')

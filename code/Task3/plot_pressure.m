@@ -1,4 +1,4 @@
-% Plot pressure
+edi% Plot pressure
 close % close previous figure
 
 data = importdata('pressure.dat');

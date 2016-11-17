@@ -68,7 +68,7 @@ int main()
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.001; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.01; // 0.1 Bad, 0.01 Seems decent
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells
@@ -384,15 +384,20 @@ for (int i = 0; i < nbr_of_particles; i++)
 
 
 
-	free(energy_kin);		energy_kin = NULL;
-	free(energy); 			energy = NULL;
-	free(disp_arr); 		disp_arr = NULL;
+    free(energy_kin);		energy_kin = NULL;
+    printf("Här är jag1\n");
+    free(energy); 			energy = NULL;
+    printf("Här är jag2\n");
+
+    free(disp_arr); 		disp_arr = NULL;
+    printf("Här är jag3\n");
 	free(virial); 			virial = NULL;
+    printf("Här är jag4\n");
 	free(temperature_avg); 	temperature_avg = NULL;
+    printf("Här är jag5\n");
 	free(pressure_avg);		pressure_avg = NULL;
-	free(dists_arr);        dists_arr = NULL;
-	free(temperature);		temperature = NULL;
-	free(pressure);			pressure = NULL;
+    printf("Här är jag6\n");
+    free(dists_arr);        dists_arr = NULL;
 
     return 0;
 }
