@@ -11,11 +11,11 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 1e4
+#define nbr_of_timesteps 1000
 #define nbr_of_timesteps_eq 4000
 #define nbr_of_dimensions 3
 
-double boundary_condition(double,double);
+#define PI 3.141592653589
 int get_bin(double , double , double , double );
 
 
@@ -35,9 +35,9 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1800.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 1500.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
-    double isothermal_compressibility = 0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
+    double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
     FILE *file;
 
@@ -56,16 +56,19 @@ int main()
     double* energy_kin 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* virial 			= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* temperature_avg = (double*) malloc(nbr_of_timesteps * sizeof(double));
-
     double* pressure_avg 	= (double*) malloc(nbr_of_timesteps * sizeof(double));
+    double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
+    double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
 
+
+    int k_bins  = 100;
 
     //TODO go over parameters again
     /* Initialize parameters*/
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.0001; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.001; // 0.1 Bad, 0.01 Seems decent
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells
@@ -83,31 +86,34 @@ int main()
     /* Put atoms on lattice */
     init_fcc(q, 4, lattice_param);
 
-    /* Initial conditions */
 
+    /* Initial conditions */
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
 
             // Initial perturbation from equilibrium
-            q[i][j] +=lattice_spacing* initial_displacement
+            q[i][j] += lattice_spacing * initial_displacement
                 * ((double)rand()/(double)RAND_MAX);
 
         }
     }
 
 
-    get_forces_AL(f,q,cell_length,nbr_of_particles);
+    get_forces_AL(f, q, cell_length, nbr_of_particles);
 
     /* Simulation */
     /* Equilibrium stage */
-    // double energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
-    // Kinetic energy
-    double energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
-    double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
+
     double inst_temperature_eq;
     double inst_pressure_eq;
-    double alpha_T = 1;
-    double alpha_P = 1;
+    double alpha_T = 1.0;
+    double alpha_P = 1.0;
+    double energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+    double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
+
+    temperature[0]  = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
+    pressure[0]     = instantaneous_pressure(virial_eq, temperature[0], nbr_of_particles, volume);
+
     for (int equil = 0; equil < 2; equil++) {
         for (int i = 1; i < nbr_of_timesteps_eq; i++)
         {
@@ -123,7 +129,6 @@ int main()
             for (int j = 0; j < nbr_of_particles; j++){
                 for (int k = 0; k < nbr_of_dimensions; k++){
                     q[j][k] += timestep * v[j][k];
-                    q[j][k] = boundary_condition(q[j][k],cell_length);
                 }
             }
 
@@ -138,23 +143,25 @@ int main()
             }
 
             /* Calculate energy */
-            // Potential energy
-            // energy_eq = get_energy_AL(q,cell_length,nbr_of_particles);
             // Kinetic energy
-            energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+            energy_kin_eq = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
-            virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
+            virial_eq = get_virial_AL(q, cell_length, nbr_of_particles);
 
 
             inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
+            temperature[equil*(nbr_of_timesteps_eq-1) + i] = inst_temperature_eq;
             inst_pressure_eq = instantaneous_pressure(virial_eq, inst_temperature_eq,
                 nbr_of_particles, volume);
+            pressure[equil*(nbr_of_timesteps_eq-1) + i] = inst_pressure_eq;
 
 
-            alpha_T = 1 + 0.1*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            //alpha_T = 1+1/(double)(nbr_of_timesteps)*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
+            // Update alhpas
+            alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
+            alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
 
-            alpha_P = 1 - 0.1*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+            // DEBUG:alpha
+            //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
 
             // Scale velocities
             for (int j = 0; j < nbr_of_particles; j++){
@@ -175,7 +182,6 @@ int main()
         }
     }
 
-
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
             qq(0,i,j)=q[i][j];
@@ -183,12 +189,19 @@ int main()
     }
 
     // Compute energies, temperature etc. at equilibrium
-    energy[0] = get_energy_AL(q,cell_length,nbr_of_particles);
-    virial[0] = get_virial_AL(q,cell_length,nbr_of_particles);
-    energy_kin[0] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+    energy[0] = get_energy_AL(q, cell_length, nbr_of_particles);
+    virial[0] = get_virial_AL(q, cell_length, nbr_of_particles);
+    energy_kin[0] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
+    double min = 0;
+    double max = sqrt(3*cell_length*cell_length);
+    double d_r = (max-min)/(1.0*k_bins);
+
+    #define dists(i,j,k) (dists_arr[nbr_of_particles*nbr_of_particles*i+nbr_of_particles*j+k])
+    double* dists_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_particles*sizeof(double));
+
     /* Simulation after equilibrium*/
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
@@ -204,12 +217,11 @@ int main()
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
                 q[j][k] += timestep * v[j][k];
-                q[j][k] = boundary_condition(q[j][k],cell_length);
             }
         }
 
-        /* Forces */
-        get_forces_AL(f,q,cell_length,nbr_of_particles);
+        /* Update Forces */
+        get_forces_AL(f, q, cell_length, nbr_of_particles);
 
         /* Final velocity*/
         for (int j = 0; j < nbr_of_particles; j++){
@@ -220,20 +232,23 @@ int main()
 
         /* Calculate energy */
         // Potential energy
-        energy[i] = get_energy_AL(q,cell_length,nbr_of_particles);
+        energy[i] = get_energy_AL(q, cell_length, nbr_of_particles);
         // Kinetic energy
-        energy_kin[i] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
+        energy_kin[i] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
-        virial[i] = get_virial_AL(q,cell_length,nbr_of_particles);
+        virial[i] = get_virial_AL(q, cell_length, nbr_of_particles);
 
 		// Temperature
-        temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles,
-        	timestep, i);
+        temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles, i);
+        temperature[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_temperature(energy_kin[i],
+            nbr_of_particles);
 
 
         // Pressure
-        pressure_avg[i] = averaged_pressure(virial, energy_kin, volume,
-        	timestep, i);
+        pressure_avg[i] = averaged_pressure(virial, energy_kin, volume, i);
+        pressure[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_pressure(virial[i],
+            temperature[2*(nbr_of_timesteps_eq-1) + i],
+            nbr_of_particles, volume);
 
 
         /* Save current displacements to array*/
@@ -242,9 +257,25 @@ int main()
                 qq(i,j,k)=q[j][k];
             }
         }
-    }
+
+        double distances[nbr_of_particles][nbr_of_particles] = {0};
+        for (int l =0 ; l < nbr_of_particles; l++)
+        {
+            for (int j =0 ; j < nbr_of_particles; j++)
+            {
+                for (int d = 0; d < nbr_of_dimensions; d++)
+                {
+                    distances[l][j] += pow(q[l][d]-q[j][d],2);
+                }
+                distances[l][j] = sqrt(distances[l][j]);
+                dists(i,l,j)= distances[l][j];
+            }
+        }
 
 
+    } // equilibration/simulation
+
+    printf("Här?");
 
     // COPY OVER THIS TODO
     // Create Histogram
@@ -259,11 +290,13 @@ int main()
                 distances[i][j] += pow(q[i][d]-q[j][d],2);
             }
             distances[i][j] = sqrt(distances[i][j]);
-            printf("%.8f \n",distances[i][j] );
         }
     }
 
-    double min = 1e10;
+    /*
+    // Get min distance between two atoms
+    max=0
+    min=1e10
     double dist = 0;
     for (int i = 1; i < nbr_of_particles; i++)
         for (int j = i+1; j< nbr_of_particles; j++)
@@ -275,7 +308,7 @@ int main()
                 printf("%i, %i, %.8f \n", i,j,dist );
             }
         }
-    double max = 0;
+    // Get max distance between two atoms
     dist = 0;
     for (int i = 1; i < nbr_of_particles; i++)
         for (int j = i+1; j< nbr_of_particles; j++)
@@ -287,53 +320,77 @@ int main()
                 printf("%i, %i, %.8f \n", i,j,dist );
             }
         }
+        min = 0;
+        max = sqrt(3*cell_length*cell_length);
+    */
 
-    int k_bins  = 100;
-    printf("Max: %.8f \n", max );
-    printf("Min: %.8f \n", min );
+    // Take tke max and min distances to be zero and the diagonal of the cube
 
-    double d_r = (max-min)/(1.0*k_bins);
 
-    printf("D_r: %.8f \n",d_r );
+
+// AVG OF distances
+double dists_avg[nbr_of_particles][nbr_of_particles];
+for (int i = 0; i < nbr_of_particles; i++)
+    for (int j = 0; j < nbr_of_particles; j++){
+        for (int t = 0; t < nbr_of_timesteps; t++)
+        {
+            dists_avg[i][j] += dists(t,i,j);
+        }
+        dists_avg[i][j]/=nbr_of_timesteps;
+    }
+
 
     int bins[k_bins];
+    int bins2[k_bins];
+    double Nideal[k_bins];
     for (int i = 0; i < k_bins; i++)
+    {
         bins[i]=0;
+        bins2[i]=0;
+    }
+
+    double factor =((double)(nbr_of_particles-1.0))/volume * 4.0*PI/3.0;
+    for (int i = 0; i < k_bins; i++)
+    {
+        Nideal[i] = factor*(3.0*i*i-3.0*i+1.0)*d_r*d_r*d_r;
+    }
 
     // Use only upper triangle of matrix
     for (int i = 1; i < nbr_of_particles; i++)
         for (int j = 1+i; j < nbr_of_particles; j++)
         {
-            int bin = get_bin(distances[i][j],min,max,d_r);
+            int bin = get_bin(dists_avg[i][j],min,max,d_r);
             bins[bin]++;
         }
 
-
-
-        for (int i = 0; i < k_bins;i++)
+    for (int i =1 ; i < nbr_of_particles; i++)
+    {
+        for (int j =i+1 ; j < nbr_of_particles; j++)
         {
-            printf("%i: %i \n",i,bins[i]);
+            int bin = get_bin(distances[i][j],min,max,d_r);
+            bins2[bin]++;
         }
-
+    }
 
     /* Save data to file*/
     file = fopen("histogram.dat","w");
-
     for (int i = 0; i < k_bins; i ++)
     {
-        fprintf(file, "%i\n",bins[i]);
+        fprintf(file, "%e \t %i \t %i \t %e \n",d_r*(i-0.5) ,bins[i], bins2[i], Nideal[i]);
     }
-
     fclose(file);
     // TO THIS ISH TODO
 
 
-    free(energy_kin); energy_kin = NULL;
-    free(energy); energy = NULL;
-    free(disp_arr); disp_arr = NULL;
-	free(virial); virial = NULL;
-	free(temperature_avg); temperature_avg = NULL;
-	free(pressure_avg); pressure_avg = NULL;
+
+
+    free(energy_kin);		energy_kin = NULL;
+    free(energy); 			energy = NULL;
+    free(disp_arr); 		disp_arr = NULL;
+	free(virial); 			virial = NULL;
+	free(temperature_avg); 	temperature_avg = NULL;
+	free(pressure_avg);		pressure_avg = NULL;
+    free(dists_arr);        dists_arr = NULL;
 
     return 0;
 }
@@ -342,18 +399,10 @@ int get_bin(double val , double min , double max , double  d_r)
 {
     int bin =0;
     double current=min;
-    while (current < val)
+    while (current <= val)
     {
         current += d_r;
         bin++;
     }
     return bin;
-}
-
-
-
-double boundary_condition(double u, double L)
-{
-    double temp = fmod(u,L);
-    return (temp > 0) ? temp : -temp;
 }
