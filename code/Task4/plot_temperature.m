@@ -1,7 +1,7 @@
 % Plot the average temperature
 close % close previous figure
 
-data = importdata('temperature.dat');
+data = importdata('temperature_avg.dat');
 
 % plot
 figure;
@@ -11,4 +11,4 @@ plot(data(:,1), data(:,2), '-')
 xlabel('Time / [ps]')
 ylabel('Temperature / [K]')
 % title
-title('Temperature')
+title('Temperature average')

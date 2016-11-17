@@ -26,6 +26,6 @@ end
 c=linspace(0,5,500);
 plot(c,b)
 
-title('Stuff')
-xlabel('xStuff')
-ylabel('yStuff')
+title('Static structure factor')
+xlabel('q')
+ylabel('S(q)')

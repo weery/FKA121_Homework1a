@@ -1,6 +1,5 @@
-% Plot the average temperature
-close % close previous figure
-close all
+% Plot the average temperature % close previous figure
+
 clear all
 
 data = importdata('data.dat');
@@ -9,8 +8,8 @@ data2= importdata('data2.dat');
 
 % plot
 figure;
+plot(data(2:10,1),data(2:10,2),'-')
 
-
-
-
-plot(data(:,1),data(:,2),'-')
+title('Static structure factor')
+xlabel('q')
+ylabel('S(q)')

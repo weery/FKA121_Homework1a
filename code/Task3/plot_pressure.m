@@ -1,14 +1,14 @@
-edi% Plot pressure
+% Plot pressure
 close % close previous figure
 
-data = importdata('pressure.dat');
+data = importdata('pressure_avg.dat');
 
 % plot
 figure;
-plot(data(:,1), data(:,2), '-');
+plot(data(4:end,1), data(4:end,2), '-');
 
 % labels
 xlabel('Time / [ps]')
-ylabel('Average pressure / [eV/A]')
+ylabel('Pressure / [eV/A]')
 % title
-title('Average pressure')
+title('Pressure average')

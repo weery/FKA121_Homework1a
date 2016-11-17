@@ -36,8 +36,11 @@ hold off
 %xlabel('Time / [dim. unit]');
 %ylabel('Displacement / [dim. unit]');
 
+% labels
+xlabel('Position / [Å]');
+ylabel('Position / [Å]');
+zlabel('Position / [Å]');
 % legend
 legend('Atom 1','Atom 2','Atom 3');
 
-% axis limits
-
+title('Movement of atoms in solid')

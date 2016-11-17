@@ -44,11 +44,23 @@ As we can see in figure \ref{fig:timestep} the required timestep is between $\De
     \captionsetup[subfigure]{justification=centering}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
-        \resizebox{\columnwidth}{!}{\input{graphics/task3/pressure500.tikz}}
+        \includegraphics[width=\textwidth]{graphics/task3/pressure.png}
     \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
-        \resizebox{\columnwidth}{!}{\input{graphics/task3/temperature500.tikz}}
+        \includegraphics[width=\textwidth]{graphics/task3/pressure_avg.png}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task3/temperature.png}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task3/temperature_avg.png}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task3/traj.png}
     \end{subfigure}
     \caption{After the equilibrium, both the pressure and the temperature needs some time to stabilize after rescaling the velocities, but remains stable for longer time. The equalisation temperature was set to $\unit[500]{C^\circ}$.}
     \label{fig:equilibrium500}
@@ -68,7 +80,15 @@ In order to set the system to a certain temperature, a technique involving scali
     \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
+        \includegraphics[width=\textwidth]{graphics/task4/pressure_avg.png}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
         \includegraphics[width=\textwidth]{graphics/task4/temperature.png}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task4/temperature_avg.png}
     \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
@@ -99,7 +119,14 @@ $C_v\left[AL\right]:\unit[24.20]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}
 \section*{Problem 7}
 
 \begin{figure}[H]
-
+\centering
+\captionsetup[subfigure]{justification=centering}
+\begin{subfigure}[b]{0.40\textwidth}
+	\centering
+	\includegraphics[width=\textwidth]{graphics/task7/radial.png}
+\end{subfigure}
+\caption{The radial function is computed by taking the histogram over all the internal distances between the atoms then divided by the random distribution of the same density.}
+\label{fig:radial}
 \end{figure}
 
 \section*{Problem 8}
@@ -114,13 +141,14 @@ $C_v\left[AL\right]:\unit[24.20]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}
     \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
-        %\resizebox{\columnwidth}{!}{\input{graphics/task4/temperature700.tikz}}
+        \includegraphics[width=\textwidth]{graphics/task8/simulated.png}
     \end{subfigure}
-    \caption{}
+    \caption{The static structure function computed both from the radial distribution function in figure \ref{fig:radial} in the left and using bins in Fourier space to the right.}
     \label{fig:StaticStructure}
 \end{figure}
 
   
+  \begin{comment}
 \section*{Problem 2}
 
 In the following we give an example of how to produce a table.
@@ -210,5 +238,7 @@ break lines that are too long. (Keep them under 80 characters!)
 
 \subsection{Calculating pi using C: \texttt{pi.c}}
 \lstinputlisting[language=c,numbers=left]{template_files/pi.c}
+
+\end{comment}
 
 \end{document}

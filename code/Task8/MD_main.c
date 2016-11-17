@@ -68,7 +68,7 @@ int main()
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.001; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.01; // 0.1 Bad, 0.01 Seems decent
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells
@@ -253,9 +253,9 @@ int main()
         }
     } // equilibration/simulation
 
-    int n_x = 10;
-    int n_y = 10;
-    int n_z = 10;
+    int n_x = 20;
+    int n_y = 20;
+    int n_z = 20;
 
     double factor = PI*2.0/cell_length;
 
@@ -312,7 +312,7 @@ int main()
             min = dis[i];
     }
 
-    int k_bins=10;
+    int k_bins=100;
     double d_r = (max-min)/(1.0*k_bins);
     int bins[k_bins];
     for (int i = 0; i < n_x*n_y*n_z; i++)

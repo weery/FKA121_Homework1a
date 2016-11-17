@@ -438,10 +438,10 @@ double get_virial_AL(double positions[][3], double cell_length, int nbr_atoms)
 
 double get_kinetic_AL(double velocities[][3], int nbr_of_dimensions, int nbr_atoms, double m_AL)
 {
-	double energy=0;
+	double energy = 0;
 	for (int j = 0; j < nbr_atoms; j++) {
 		for (int k = 0; k < nbr_of_dimensions; k++) {
-			energy += m_AL * pow(velocities[j][k], 2) / 2;
+			energy += m_AL * pow(velocities[j][k], 2) / 2.0;
 		}
 	}
 	return energy;
@@ -449,21 +449,21 @@ double get_kinetic_AL(double velocities[][3], int nbr_of_dimensions, int nbr_ato
 
 
 /* Calculation of instantaneous temperature, se 5.2 in molecular dynamics*/
-double instantaneous_temperature(double kinetic_energy,int nbr_of_particles)
+double instantaneous_temperature(double kinetic_energy, int nbr_of_particles)
 {
-	double temperature= 0;
-	temperature = 2/(k_b*nbr_of_particles*3) * kinetic_energy;
+	double temperature = 0;
+	temperature = 2.0/(k_b*nbr_of_particles*3) * kinetic_energy;
 	return temperature;
 }
 
 /* Calculation of temperature based on averaged kinetic energy */
-double averaged_temperature(double* kinetic_energy,int nbr_of_particles,double timestep ,int current_nbr_of_timesteps)
+double averaged_temperature(double* kinetic_energy, int nbr_of_particles, int current_nbr_of_timesteps)
 {
-    double temperature=0;
-    double factor = 2/(3*k_b*nbr_of_particles*current_nbr_of_timesteps);
+    double temperature = 0;
+    double factor = 2.0/(3.0*k_b*nbr_of_particles*(current_nbr_of_timesteps+1.0));
     for (int i = 0; i < current_nbr_of_timesteps+1; i++)
     {
-        temperature +=kinetic_energy[i];
+        temperature += kinetic_energy[i];
     }
     temperature*=factor;
     return temperature;
@@ -471,22 +471,21 @@ double averaged_temperature(double* kinetic_energy,int nbr_of_particles,double t
 
 
 /* Calculation of instantaneous pressure, se 5.3 in molecular dynamics*/
-double instantaneous_pressure(double virial, double temperature, int nbr_of_particles,double volume)
+double instantaneous_pressure(double virial, double temperature, int nbr_of_particles, double volume)
 {
-	double pressure=0;
-	pressure += virial + temperature *k_b*nbr_of_particles/volume;
-	return pressure;
+	//double pressure = 0;
+	return (virial + temperature *k_b*nbr_of_particles) / volume;
 }
 
 /* Calculation of pressure based on averaged virial */
-double averaged_pressure(double* virial, double* kinetic_energy, double volume, double timestep, int current_nbr_of_timesteps)
+double averaged_pressure(double* virial, double* kinetic_energy, double volume, int current_nbr_of_timesteps)
 {
-    double pressure=0;
+    double pressure = 0;
     for (int i = 0; i < current_nbr_of_timesteps+1; i++)
     {
-        pressure +=virial[i]/volume+2/(3*volume)*kinetic_energy[i];
+        pressure += (virial[i] + 2.0/3.0*kinetic_energy[i]);
 
     }
-	pressure/=timestep*current_nbr_of_timesteps;
+	pressure /= volume*(current_nbr_of_timesteps+1.0);
     return pressure;
 }
