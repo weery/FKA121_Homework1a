@@ -12,9 +12,9 @@ extern double get_energy_AL(double[][3], double, int);
 extern double get_kinetic_AL(double[][3], int, int, double);
 extern double get_virial_AL(double[][3], double, int);
 extern double instantaneous_temperature(double,int);
-extern double averaged_temperature(double*,int,double,int);
+extern double averaged_temperature(double*,int,int);
 extern double instantaneous_pressure(double,double,int,double);
-extern double averaged_pressure(double*,double*,double,int,int);
+extern double averaged_pressure(double*,double*,double,int);
 extern double calculate_heat_capacity_kin(double*, double, int, int);
 extern double calculate_heat_capacity_pot(double*, double, int, int);
 

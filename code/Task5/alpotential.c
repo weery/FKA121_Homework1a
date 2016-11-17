@@ -490,20 +490,20 @@ double averaged_pressure(double* virial, double* kinetic_energy, double volume, 
     return pressure;
 }
 
-double calculate_heat_capacity_kin(double* kinetic, double temperaute, int nbr_of_particles, int nbr_of_timesteps)
+double calculate_heat_capacity_kin(double* kinetic, double temperature, int nbr_of_particles, int nbr_of_timesteps)
 {
-	double prefactor = 3*nbr_of_particles*k_b/2;
-	double factor = 2/(3*nbr_of_particles*k_b*k_b*temperaute*temperaute);
-	double mean =0;
+	double prefactor = 3.0*nbr_of_particles*k_b/2.0;
+	double factor = 2.0/(3.0*nbr_of_particles*k_b*k_b*temperature*temperature);
+	double mean = 0.0;
 	int i;
-	double sum = 0;
-	double fluctuation = 0;
+	double sum = 0.0;
+	double fluctuation = 0.0;
 	for (i = 0; i < nbr_of_particles; i++)
 	{
 		mean += kinetic[i];
 	}
 	mean /= (double)(nbr_of_particles);
-	for (i=0; i < nbr_of_particles; i++)
+	for (i = 0; i < nbr_of_particles; i++)
 	{
 		fluctuation = mean-kinetic[i];
 		sum += fluctuation*fluctuation;
@@ -513,22 +513,22 @@ double calculate_heat_capacity_kin(double* kinetic, double temperaute, int nbr_o
 	return heat_cap;
 }
 
-double calculate_heat_capacity_pot(double* potential, double temperaute, int nbr_of_particles, int nbr_of_timesteps)
+double calculate_heat_capacity_pot(double* potential, double temperature, int nbr_of_particles, int nbr_of_timesteps)
 {
-	double prefactor = 3*nbr_of_particles*k_b/2;
-	double factor = 2/(3*nbr_of_particles*k_b*k_b*temperaute*temperaute);
-	double mean =0;
+	double prefactor = 3.0*nbr_of_particles*k_b/2.0;
+	double factor = 2.0/(3.0*nbr_of_particles*k_b*k_b*temperature*temperature);
+	double mean = 0.0;
 	int i;
-	double sum = 0;
-	double fluctuation = 0;
+	double sum = 0.0;
+	double fluctuation = 0.0;
 	for (i = 0; i < nbr_of_particles; i++)
 	{
 		mean += potential[i];
 	}
 	mean /= (double)(nbr_of_particles);
-	for (i=0; i < nbr_of_particles; i++)
+	for (i = 0; i < nbr_of_particles; i++)
 	{
-		fluctuation = mean-kinetic[i];
+		fluctuation = mean-potential[i];
 		sum += fluctuation*fluctuation;
 	}
 	sum /= (double)(nbr_of_particles);
