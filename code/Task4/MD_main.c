@@ -1,8 +1,4 @@
-/*
- MD_main.c
 
- Created by Anders Lindman on 2013-10-31.
- */
 
 #include <stdio.h>
 #include <math.h>
@@ -36,7 +32,6 @@ int main()
     double timestep;
     double temperature_eq[] = { 1500.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
-    double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
     FILE *file;
 
@@ -154,10 +149,8 @@ int main()
 
             // Update alhpas
             alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+            alpha_P = 1.0 - 0.01*(pressure_eq - inst_pressure_eq);
 
-            // DEBUG:alpha
-            //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
 
             // Scale velocities
             for (int j = 0; j < nbr_of_particles; j++){
@@ -257,14 +250,11 @@ int main()
     file = fopen("displacement.dat","w");
 
     double current_time;
-    for (int i = 0; i < nbr_of_timesteps; i ++)
-    {
+    for (int i = 0; i < nbr_of_timesteps; i ++) {
         current_time = i*timestep;
         fprintf(file, "%.4f \t", current_time );
-        for (int j = 0; j < nbr_of_particles; j++)
-        {
-            for (int k = 0; k < nbr_of_dimensions; k++)
-            {
+        for (int j = 0; j < nbr_of_particles; j++) {
+            for (int k = 0; k < nbr_of_dimensions; k++) {
                 fprintf(file, "%.4f \t", qq(i,j,k));
             }
         }
@@ -275,8 +265,7 @@ int main()
     /* Save energies to file */
     file = fopen("energy.dat","w");
 
-    for (int i = 0; i < nbr_of_timesteps; i ++)
-    {
+    for (int i = 0; i < nbr_of_timesteps; i ++) {
         current_time = i*timestep;
         fprintf(file, "%.4f \t", current_time);
         fprintf(file, "%.4f \t", energy[i]);
@@ -284,22 +273,9 @@ int main()
     }
     fclose(file);
 
-    /* Save energies to file */
-    /*file = fopen("virial.dat","w");
-
-    for (int i = 0; i < nbr_of_timesteps; i ++)
-    {
-        current_time = i*timestep;
-        fprintf(file, "%.4f \t", current_time);
-        fprintf(file, "%.4f \n", virial[i]);
-    }
-    fclose(file);*/
-
     // Save temperature to file
     file = fopen("temperature.dat", "w");
-    for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++)
-    {
-
+    for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++) {
     	current_time = i*timestep;
     	fprintf(file, "%.3f \t %e\n", current_time, temperature[i]);
     }
@@ -314,8 +290,7 @@ int main()
 
     // Save pressure to file
     file = fopen("pressure.dat", "w");
-    for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++)
-    {
+    for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++) {
     	current_time = i*timestep;
     	fprintf(file, "%.3f \t%e \n", current_time, pressure[i]);
     }
@@ -327,6 +302,7 @@ int main()
         fprintf(file, "%.3f \t %e\n", current_time, pressure_avg[i]);
     }
     fclose(file);
+
 
     free(energy_kin);		energy_kin = NULL;
     free(energy); 			energy = NULL;
