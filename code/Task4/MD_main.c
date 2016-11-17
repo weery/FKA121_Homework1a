@@ -334,6 +334,8 @@ int main()
 	free(virial); 			virial = NULL;
 	free(temperature_avg); 	temperature_avg = NULL;
 	free(pressure_avg);		pressure_avg = NULL;
+    free(temperature);      temperature = NULL;
+    free(pressure);         pressure = NULL;
 
     return 0;
 }
