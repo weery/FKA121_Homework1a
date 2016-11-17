@@ -384,13 +384,15 @@ for (int i = 0; i < nbr_of_particles; i++)
 
 
 
-    free(energy_kin);		energy_kin = NULL;
-    free(energy); 			energy = NULL;
-    free(disp_arr); 		disp_arr = NULL;
+	free(energy_kin);		energy_kin = NULL;
+	free(energy); 			energy = NULL;
+	free(disp_arr); 		disp_arr = NULL;
 	free(virial); 			virial = NULL;
 	free(temperature_avg); 	temperature_avg = NULL;
 	free(pressure_avg);		pressure_avg = NULL;
-    free(dists_arr);        dists_arr = NULL;
+	free(dists_arr);        dists_arr = NULL;
+	free(temperature);		temperature = NULL;
+	free(pressure);			pressure = NULL;
 
     return 0;
 }
