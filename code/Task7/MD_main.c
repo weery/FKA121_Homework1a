@@ -345,8 +345,6 @@ int main()
     fclose(file);
     // TO THIS ISH TODO
 
-    printf("debug\n");
-
     printf("Saved files\n");
 
     free(energy_kin);		energy_kin = NULL;

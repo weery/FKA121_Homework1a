@@ -17,5 +17,5 @@ plot(data(:,1),g)
 
 xlim([0,data(end,1)])
 title('Radial distribution function g(r)')
-xlabel('r [Å]')
-ylabel('g(r)')
+xlabel('$r$ / [\r{A}]', 'Interpreter', 'latex')
+ylabel('$g(r)$', 'Interpreter', 'latex')
