@@ -421,10 +421,10 @@ int get_bin(double val , double min , double max , double  d_r)
 
 double boundary_condition(double u, double L)
 {
-
-    double f = fmod(u,L);
-    if (f < 0)
-        return -f;
-    else
-        return f;
+    double sum = u;
+    while (sum > 0)
+    {
+        sum -= L;
+    }
+    return sum +L;
 }

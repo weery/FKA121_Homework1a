@@ -314,7 +314,7 @@ int main()
             min = dis[i];
     }
 
-    int k_bins=50;
+    int k_bins=200;
     double d_r = (max-min)/(1.0*k_bins);
     int bins[k_bins];
     for (int i = 0; i < n_x*n_y*n_z; i++)
