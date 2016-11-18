@@ -8,7 +8,7 @@ data = importdata('../Task7/histogram.dat');
 figure;
 %%plot(data(:,2))
 
-g=data(:,3)./data(:,4);
+g=data(:,2)./data(:,3);
 
 %plot(data(:,1),g)
 

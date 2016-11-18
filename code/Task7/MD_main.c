@@ -61,7 +61,7 @@ int main()
     double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
 
 
-    int k_bins  = 100;
+    int k_bins  = 150;
 
     //TODO go over parameters again
     /* Initialize parameters*/
@@ -198,6 +198,8 @@ int main()
     double max = sqrt(3*cell_length*cell_length);
     double d_r = (max-min)/(1.0*k_bins);
 
+    printf("max: %.8f\n", max );
+    printf("d_r bins: %.8f\n", d_r*k_bins );
     #define dists(i,j,k) (dists_arr[nbr_of_particles*nbr_of_particles*i+nbr_of_particles*j+k])
     double* dists_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_particles*sizeof(double));
 
@@ -257,7 +259,6 @@ int main()
             }
         }
 
-
         double distances[nbr_of_particles][nbr_of_particles] = {0};
         for (int l =0 ; l < nbr_of_particles; l++) {
             for (int j =0 ; j < nbr_of_particles; j++) {
@@ -276,6 +277,7 @@ int main()
         }
 
 
+
     } // equilibration/simulation
 
 
@@ -286,7 +288,12 @@ int main()
     for (int i = 0 ; i < nbr_of_particles; i++) {
         for (int j = 0 ; j < nbr_of_particles; j++) {
             for (int d = 0; d < nbr_of_dimensions; d++) {
-                distances[i][j] += pow(q[i][d]-q[j][d],2);
+                double q1 = q[i][d];
+                double q2 = q[j][d];
+                q1=boundary_condition(q1,cell_length);
+                q2=boundary_condition(q2,cell_length);
+
+                distances[i][j] += pow(q1-q2,2);
             }
             distances[i][j] = sqrt(distances[i][j]);
         }
@@ -304,28 +311,17 @@ int main()
 	        dists_avg[i][j]/=nbr_of_timesteps;
 	    }
 	}
-	
 
-    int bins[k_bins];
+
     int bins2[k_bins];
     double Nideal[k_bins];
     for (int i = 0; i < k_bins; i++) {
-        bins[i]=0;
         bins2[i]=0;
     }
 
     double factor =((double)(nbr_of_particles-1.0))/volume * 4.0*PI/3.0;
     for (int i = 0; i < k_bins; i++) {
         Nideal[i] = factor*(3.0*i*i-3.0*i+1.0)*d_r*d_r*d_r;
-    }
-
-    // Use only upper triangle of matrix
-    for (int i = 1; i < nbr_of_particles; i++) {
-        for (int j = 1+i; j < nbr_of_particles; j++) {
-
-            int bin = get_bin(dists_avg[i][j],min,max,d_r);
-            bins[bin]++;
-        }
     }
 
     for (int i =1 ; i < nbr_of_particles; i++) {
@@ -340,7 +336,7 @@ int main()
     /* Save data to file*/
     file = fopen("histogram.dat","w");
     for (int i = 0; i < k_bins; i ++) {
-        fprintf(file, "%e \t %i \t %i \t %e \n",d_r*(i-0.5) ,bins[i], bins2[i], Nideal[i]);
+        fprintf(file, "%e \t %i \t %e \n",d_r*(i-0.5), bins2[i], Nideal[i]);
     }
     fclose(file);
     // TO THIS ISH TODO
@@ -376,6 +372,9 @@ int get_bin(double val , double min , double max , double  d_r)
         current += d_r;
         bin++;
     }
+    printf("%i \n", bin );
+    if (current > max)
+        return bin--;
     return bin;
 }
 

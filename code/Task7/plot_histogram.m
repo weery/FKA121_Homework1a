@@ -10,7 +10,7 @@ figure;
 
 
 
-g=data(:,3)./data(:,4);
+g=data(:,2)./data(:,3);
 
 
 plot(data(:,1),g)
