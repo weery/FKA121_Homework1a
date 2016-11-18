@@ -194,9 +194,10 @@ int main()
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
-    double min = 0;
+    double min = 0.0;
     double max = sqrt(3*cell_length*cell_length);
-    double d_r = (max-min)/(1.0*k_bins);
+    double d_r = (max-min)/((double)k_bins);
+    printf("%f\n", d_r);
 
     printf("max: %.8f\n", max );
     printf("d_r bins: %.8f\n", d_r*k_bins );
@@ -347,7 +348,6 @@ int main()
     printf("Här är jag1\n");
     free(energy); 			energy = NULL;
     printf("Här är jag2\n");
-
     free(disp_arr); 		disp_arr = NULL;
     printf("Här är jag3\n");
 	free(virial); 			virial = NULL;
@@ -363,12 +363,13 @@ int main()
 
 int get_bin(double val , double min , double max , double  d_r)
 {
-    int bin =0;
-    double current=min;
+    int bin = 0;
+    double current = min;
     while (current <= val)
     {
         current += d_r;
         bin++;
+        printf("%d\n", bin);
     }
     printf("%i \n", bin );
     if (current > max)
