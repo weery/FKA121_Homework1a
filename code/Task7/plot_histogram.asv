@@ -9,7 +9,7 @@ figure;
 %%plot(data(:,2))
 
 
-% Rätt faktor? antal tidssteg och antal atomer
+% R
 g=data(:,3)./data(:,4)/1000/256;
 
 

@@ -61,7 +61,7 @@ int main()
     double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
 
 
-    int k_bins  = 150;
+    int k_bins  = 250;
 
     //TODO go over parameters again
     /* Initialize parameters*/
