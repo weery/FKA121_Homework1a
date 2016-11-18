@@ -244,10 +244,7 @@ int main()
     }
 
 
-    // COPY OVER THIS TODO
     // Create Histogram
-
-    printf("Debug");
 
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
@@ -287,18 +284,12 @@ int main()
     fclose(file);
     // TO THIS ISH TODO
 
-    printf("Saved files\n");
 
     free(energy_kin);		energy_kin = NULL;
-    printf("Här är jag1\n");
     free(energy); 			energy = NULL;
-    printf("Här är jag2\n");
     free(disp_arr); 		disp_arr = NULL;
-    printf("Här är jag3\n");
 	free(virial); 			virial = NULL;
-    printf("Här är jag4\n");
 	free(temperature_avg); 	temperature_avg = NULL;
-    printf("Här är jag5\n");
 	free(pressure_avg);		pressure_avg = NULL;
 
     return 0;
