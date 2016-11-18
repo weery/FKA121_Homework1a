@@ -117,7 +117,6 @@ int main()
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
                 q[j][k] += timestep * v[j][k];
-                q[j][k] = boundary_condition(q[j][k],cell_length);
             }
         }
 

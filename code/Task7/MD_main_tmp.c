@@ -199,64 +199,45 @@ int main()
         bins2[i]=0;
     }
 
-    for (int i = 1; i < nbr_of_timesteps; i++)
-    {
+
+    /* Simulation after equilibrium*/
+    for (int i = 1; i < nbr_of_timesteps; i++) {
+
         /** Verlet algorithm **/
         /* Half step for velocity */
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
+
+        printf("jag hann komma hit1\n");
+        for (int j = 0; j < nbr_of_particles; j++) {
+            for (int k = 0; k < nbr_of_dimensions; k++) {
                 v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
             }
         }
-
+        printf("jag hann komma hit2\n");
         /* Update displacement*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
+        for (int j = 0; j < nbr_of_particles; j++) {
+            for (int k = 0; k < nbr_of_dimensions; k++) {
                 q[j][k] += timestep * v[j][k];
-                q[j][k] = boundary_condition(q[j][k],cell_length);
             }
         }
+        printf("jag hann komma hit3\n");
+        /* Update Forces */
+        get_forces_AL(f, q, cell_length, nbr_of_particles);
 
-        /* Forces */
-        get_forces_AL(f,q,cell_length,nbr_of_particles);
-
+        printf("jag hann komma hit4\n");
         /* Final velocity*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
+        for (int j = 0; j < nbr_of_particles; j++) {
+            for (int k = 0; k < nbr_of_dimensions; k++) {
                 v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
             }
         }
-
-        /* Calculate energy */
-        // Potential energy
-        energy[i] = get_energy_AL(q,cell_length,nbr_of_particles);
-        // Kinetic energy
-        energy_kin[i] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
-
-        virial[i]=get_virial_AL(q,cell_length,nbr_of_particles);
-
-        /* Save current displacements to array*/
-        for (int j = 0; j < nbr_of_particles; j++){
-            for (int k = 0; k < nbr_of_dimensions; k++){
-                qq(i,j,k)=q[j][k];
-            }
-        }
-    }
-
-
-    // COPY OVER THIS TODO
-    // Create Histogram
-
-    printf("Debug");
-
-    for (int i = 1; i < nbr_of_timesteps; i++)
-    {
+        printf("jag hann komma hit5\n");
         for (int j = 1 ; j < nbr_of_particles; j++) {
             for (int k = j+1 ; k < nbr_of_particles; k++) {
                 double sum =  0;
+                printf("j: %i\t k: %i \n",j,k );
                 for (int d = 0; d < nbr_of_dimensions; d++) {
-                    double q1 = qq(i,j,d);
-                    double q2 = qq(i,k,d);
+                    double q1 = q[j][d];
+                    double q2 = q[k][d];
                     q1=boundary_condition(q1,cell_length);
                     q2=boundary_condition(q2,cell_length);
 
@@ -265,11 +246,24 @@ int main()
                 sum = sqrt(sum);
                 int bin = get_bin(sum,min,max,d_r);
                 if (bin >= k_bins)
-                    printf("Fuck");
+                    printf("%i \n", bin );
+                printf("j: %i\t k: %i \n",j,k );
+                bins[bin]++;
                 bins2[bin]++;
+                printf("j: %i\t k: %i \n",j,k );
             }
+            printf("New row\n");
         }
-    }
+        printf("jag hann komma hit\n");
+    } // equilibration/simulation
+
+
+    // COPY OVER THIS TODO
+    // Create Histogram
+
+    printf("Debug");
+
+
     double Nideal[k_bins];
     double factor =((double)(nbr_of_particles-1.0))/volume * 4.0*PI/3.0;
     for (int i = 0; i < k_bins; i++) {
@@ -282,7 +276,7 @@ int main()
     /* Save data to file*/
     file = fopen("histogram.dat","w");
     for (int i = 0; i < k_bins; i ++) {
-        fprintf(file, "%e \t %i \t %i \t %e \n",d_r*(i-0.5), bins[i],bins2[i], Nideal[i]);
+        fprintf(file, "%e \t %i \t %e \n",d_r*(i-0.5), bins[i],binsi[2], Nideal[i]);
     }
     fclose(file);
     // TO THIS ISH TODO
