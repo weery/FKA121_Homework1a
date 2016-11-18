@@ -259,7 +259,7 @@ int main()
                 double distance_sq = boundary_condition_dist_sq(q1, q2, cell_length);
                 double dist = sqrt(distance_sq);
                 int bin = get_bin(dist,min,max,d_r);
-                bins2[bin]++;
+                bins2[bin] += 2;
             }
         }
     }
@@ -314,6 +314,7 @@ double boundary_condition_dist_sq(double u1[3], double u2[3], double L)
 
 	    u1[i] -= floor(u1[i]);
 	    d[i] = u1[i] - (u2[i] - floor(u2[i]));
+	    d[i] -= (double)((int)floor(d[i]+0.5));
 	}
 
 	double sum = 0.0;
