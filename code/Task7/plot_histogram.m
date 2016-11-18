@@ -10,7 +10,7 @@ figure;
 
 
 
-g=data(:,2)./data(:,3);
+g=data(:,2)./data(:,3)/256;
 
 
 plot(data(:,1),g)

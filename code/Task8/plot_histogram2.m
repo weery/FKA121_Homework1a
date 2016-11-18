@@ -8,11 +8,11 @@ data = importdata('../Task7/histogram.dat');
 figure;
 %%plot(data(:,2))
 
-g=data(:,2)./data(:,3);
+g=data(:,2)./data(:,3)/256;
 
 %plot(data(:,1),g)
 
-nDats=20;
+nDats=25;
 
 integr=@(q)sum(data(1:nDats,1).^2.*(g(1:nDats)-1).*sin(q*data(1:nDats,1))./(data(1:nDats,1)*q))/((data(nDats,1)-data(1,1))*nDats);
 

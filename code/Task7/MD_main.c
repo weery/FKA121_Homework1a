@@ -196,13 +196,18 @@ int main()
     	nbr_of_particles, volume);
     double min = 0.0;
     double max = sqrt(3*cell_length*cell_length);
+<<<<<<< Updated upstream
     double d_r = (max-min)/((double)k_bins);
     printf("%f\n", d_r);
+=======
+    double d_r = (max-min)/(1.0*k_bins);
+    int bins[k_bins];
+    for (int i = 0; i < k_bins; i++) {
+        bins[i]=0;
+    }
+    int debug_count = 0;
+>>>>>>> Stashed changes
 
-    printf("max: %.8f\n", max );
-    printf("d_r bins: %.8f\n", d_r*k_bins );
-    #define dists(i,j,k) (dists_arr[nbr_of_particles*nbr_of_particles*i+nbr_of_particles*j+k])
-    double* dists_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_particles*sizeof(double));
 
     /* Simulation after equilibrium*/
     for (int i = 1; i < nbr_of_timesteps; i++) {
@@ -260,84 +265,45 @@ int main()
             }
         }
 
-        double distances[nbr_of_particles][nbr_of_particles] = {0};
-        for (int l =0 ; l < nbr_of_particles; l++) {
-            for (int j =0 ; j < nbr_of_particles; j++) {
-                for (int d = 0; d < nbr_of_dimensions; d++) {
 
-                    double q1 = q[l][d];
+        for (int i = 1 ; i < nbr_of_particles; i++) {
+            for (int j = i+1 ; j < nbr_of_particles; j++) {
+                double sum =  0;
+                for (int d = 0; d < nbr_of_dimensions; d++) {
+                    double q1 = q[i][d];
                     double q2 = q[j][d];
                     q1=boundary_condition(q1,cell_length);
                     q2=boundary_condition(q2,cell_length);
 
-                    distances[l][j] += pow(q1-q2,2);
+                    sum += pow(q1-q2,2);
                 }
-                distances[l][j] = sqrt(distances[l][j]);
-                dists(i,l,j)= distances[l][j];
+                sum = sqrt(sum);
+                int bin = get_bin(sum,min,max,d_r);
+                bins[bin]++;
             }
         }
-
-
-
     } // equilibration/simulation
 
 
     // COPY OVER THIS TODO
     // Create Histogram
 
-    double distances[nbr_of_particles][nbr_of_particles] = { 0 };
-    for (int i = 0 ; i < nbr_of_particles; i++) {
-        for (int j = 0 ; j < nbr_of_particles; j++) {
-            for (int d = 0; d < nbr_of_dimensions; d++) {
-                double q1 = q[i][d];
-                double q2 = q[j][d];
-                q1=boundary_condition(q1,cell_length);
-                q2=boundary_condition(q2,cell_length);
-
-                distances[i][j] += pow(q1-q2,2);
-            }
-            distances[i][j] = sqrt(distances[i][j]);
-        }
-    }
+    printf("Debug");
 
 
-
-	// AVG OF distances
-	double dists_avg[nbr_of_particles][nbr_of_particles];
-	for (int i = 0; i < nbr_of_particles; i++) {
-	    for (int j = 0; j < nbr_of_particles; j++) {
-	        for (int t = 0; t < nbr_of_timesteps; t++) {
-	            dists_avg[i][j] += dists(t,i,j);
-	        }
-	        dists_avg[i][j]/=nbr_of_timesteps;
-	    }
-	}
-
-
-    int bins2[k_bins];
     double Nideal[k_bins];
-    for (int i = 0; i < k_bins; i++) {
-        bins2[i]=0;
-    }
-
     double factor =((double)(nbr_of_particles-1.0))/volume * 4.0*PI/3.0;
     for (int i = 0; i < k_bins; i++) {
         Nideal[i] = factor*(3.0*i*i-3.0*i+1.0)*d_r*d_r*d_r;
     }
 
-    for (int i =1 ; i < nbr_of_particles; i++) {
-        for (int j =i+1 ; j < nbr_of_particles; j++) {
 
-            int bin = get_bin(distances[i][j],min,max,d_r);
-            bins2[bin]++;
-        }
-    }
 
 
     /* Save data to file*/
     file = fopen("histogram.dat","w");
     for (int i = 0; i < k_bins; i ++) {
-        fprintf(file, "%e \t %i \t %e \n",d_r*(i-0.5), bins2[i], Nideal[i]);
+        fprintf(file, "%e \t %i \t %e \n",d_r*(i-0.5), bins[i], Nideal[i]);
     }
     fclose(file);
     // TO THIS ISH TODO
@@ -355,8 +321,6 @@ int main()
 	free(temperature_avg); 	temperature_avg = NULL;
     printf("Här är jag5\n");
 	free(pressure_avg);		pressure_avg = NULL;
-    printf("Här är jag6\n");
-    free(dists_arr);        dists_arr = NULL;
 
     return 0;
 }
@@ -371,7 +335,6 @@ int get_bin(double val , double min , double max , double  d_r)
         bin++;
         printf("%d\n", bin);
     }
-    printf("%i \n", bin );
     if (current > max)
         return bin--;
     return bin;
