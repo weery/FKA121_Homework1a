@@ -18,7 +18,7 @@
 #define PI 3.141592653589
 int get_bin(double , double , double , double );
 
-double boundary_condition(double,double);
+double boundary_condition_dist_sq(double u1[3], double u2[3], double L);
 
 /* Main program */
 int main()
@@ -213,7 +213,6 @@ int main()
         for (int j = 0; j < nbr_of_particles; j++){
             for (int k = 0; k < nbr_of_dimensions; k++){
                 q[j][k] += timestep * v[j][k];
-                q[j][k] = boundary_condition(q[j][k],cell_length);
             }
         }
 
@@ -250,17 +249,16 @@ int main()
     {
         for (int j = 1 ; j < nbr_of_particles; j++) {
             for (int k = j+1 ; k < nbr_of_particles; k++) {
-                double sum =  0;
-                for (int d = 0; d < nbr_of_dimensions; d++) {
-                    double q1 = qq(i,j,d);
-                    double q2 = qq(i,k,d);
-                    q1=boundary_condition(q1,cell_length);
-                    q2=boundary_condition(q2,cell_length);
 
-                    sum += pow(q1-q2,2);
+                double q1[nbr_of_dimensions];
+                double q2[nbr_of_dimensions];
+                for (int d = 0; d < nbr_of_dimensions; d++) {
+                    q1[d] = qq(i,j,d);
+                    q2[d] = qq(i,k,d);
                 }
-                sum = sqrt(sum);
-                int bin = get_bin(sum,min,max,d_r);
+                double distance_sq = boundary_condition_dist_sq(q1, q2, cell_length);
+                double dist = sqrt(distance_sq);
+                int bin = get_bin(dist,min,max,d_r);
                 bins2[bin]++;
             }
         }
@@ -307,12 +305,20 @@ int get_bin(double val , double min , double max , double  d_r)
     return bin;
 }
 
-double boundary_condition(double u, double L)
+double boundary_condition_dist_sq(double u1[3], double u2[3], double L)
 {
-    double sum = u;
-    while (sum > 0)
-    {
-        sum -= L;
-    }
-    return sum +L;
+	double d[3];
+	for (int i = 0; i < 3; i++) {
+	    u1[i] /= L;
+	    u2[i] /= L;
+
+	    u1[i] -= floor(u1[i]);
+	    d[i] = u1[i] - (u2[i] - floor(u2[i]));
+	}
+
+	double sum = 0.0;
+	for (int i = 0; i < 3; i++)
+		sum += pow(d[i], 2);
+    return L*L * sum;
+
 }
