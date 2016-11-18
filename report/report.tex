@@ -138,7 +138,7 @@ If we compare these results to those from the previous problem we see that they 
 
 \section*{Problem 7}
 
-The radial distribution function obtained can be found in figure~\ref{fig:radial}. Using Matlab we find that the first peak is at the distance 2.85 \r{A}, which corresponds to the closest distance between two aluminium atoms (shortest distance in a fcc structure with the unit cell length of 4.046 \r{A}). This is expected. The other peaks
+The radial distribution function obtained can be found in figure~\ref{fig:radial}. Using Matlab we find that the first peak is at the distance 2.85 \r{A}, which corresponds to the shortest distance in a fcc structure with the unit cell length of 4.046 \r{A}. This is the distance between one of the corner atoms and a face centered atom close to that corner, which is expected. The other larger peaks are around 5 \r{A} and 7.17 \r{A}. These align with the two next shortest distances in an fcc structure.
 
 \begin{figure}[H]
 \centering
@@ -170,84 +170,19 @@ Below (Fig.~\ref{fig:StaticStructure}) are two approximations of the static stru
     \label{fig:StaticStructure}
 \end{figure}
 
-  
-  
-  
-  
-  \begin{comment}
-\section*{Problem 2}
-
-In the following we give an example of how to produce a table.
-Use the code for Table~\ref{tab1} as a template.
-
-\begin{table}[!ht]
-  \begin{center}
-    \caption{A dummy table}
-    \begin{tabular}{l|c|c}\hline\hline
-      \textbf{Col.~1} & \textbf{Col.~2} & \textbf{Col.~3} \\ \hline
-      the & quick & brown \\ 
-      fox & jumps & over \\ 
-      the & lazy  & dog \\ 
-      \hline\hline
-    \end{tabular}
-    \label{tab1}
-  \end{center}
-\end{table}
-
-\section*{Problem 3}
-
-If you find some part of the code particularly interesting you may 
-include it in the text, otherwise it should be included in the appedix.
-If you do want to include code the following commands will print
-the text directly, with no \LaTeX~commands executed:
-
-\begin{lstlisting}[language=matlab]
-% Hello world ten times in MATLAB
-for i = 1 : 10
-  fprintf('Hello world %d!\n',i);
-end
-\end{lstlisting}
-
-\begin{lstlisting}[language=python]
-# Hello world ten times in Python
-for i in range(10):
-  print 'Hello world %d!' % i
-\end{lstlisting}
-
-\section*{Problem 4}
-At some point it may be appropriate to include equations. It is done in the
-following way:
-
-\begin{equation}
-  V(r) = 4\epsilon \left[ \left( \frac{\sigma}{r} \right)^{12} - 
-    \left(\frac{\sigma}{r} \right)^{6} \right]
-\end{equation}
-
-Do number and reference all your equations.
 
 \section*{Concluding discussion}
 
-Use your favourite flavor of \LaTeX{} to compile the file:
-\begin{verbatim}
-xelatex template.tex
-pdflatex template.tex
-latex template.tex
-\end{verbatim}
-should all work.
-If you use \verb+pdflatex+ or \verb+xelatex+, included figures need to be in
-\verb+pdf+, \verb+jpg+, or \verb+png+ format. If you want to include eps
-figures, you can easily convert them to \verb+pdf+ using the command
-\begin{verbatim}
-ps2pdf -dEPSCrop figure.eps figure.pdf
-\end{verbatim}
 
-\begin{thebibliography}{69}
-\bibitem{lamport94} Leslie Lamport, \emph{\LaTeX: A Document Preparation
-System}. Addison Wesley, Massachusetts, 2nd Edition, 1994.
-\end{thebibliography}
 
-\newpage
 
+\appendix
+\section*{Source code}
+
+
+  
+
+\begin{comment}
 \appendix
 
 \section{Source Code}
