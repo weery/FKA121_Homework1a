@@ -196,17 +196,11 @@ int main()
     	nbr_of_particles, volume);
     double min = 0.0;
     double max = sqrt(3*cell_length*cell_length);
-<<<<<<< Updated upstream
-    double d_r = (max-min)/((double)k_bins);
-    printf("%f\n", d_r);
-=======
     double d_r = (max-min)/(1.0*k_bins);
     int bins[k_bins];
     for (int i = 0; i < k_bins; i++) {
         bins[i]=0;
     }
-    int debug_count = 0;
->>>>>>> Stashed changes
 
 
     /* Simulation after equilibrium*/
@@ -269,6 +263,7 @@ int main()
         for (int i = 1 ; i < nbr_of_particles; i++) {
             for (int j = i+1 ; j < nbr_of_particles; j++) {
                 double sum =  0;
+                printf("%i: i \t %i j \n",i,j );
                 for (int d = 0; d < nbr_of_dimensions; d++) {
                     double q1 = q[i][d];
                     double q2 = q[j][d];
@@ -280,7 +275,9 @@ int main()
                 sum = sqrt(sum);
                 int bin = get_bin(sum,min,max,d_r);
                 bins[bin]++;
+                printf("%i: i \t %i j \n",i,j );
             }
+
         }
     } // equilibration/simulation
 
