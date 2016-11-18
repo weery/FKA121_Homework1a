@@ -200,5 +200,10 @@ int main()
 
 double boundary_condition(double u, double L)
 {
-    return fmod(u,L);
+
+    double f = fmod(u,L);
+    if (f < 0)
+        return -f;
+    else
+        return f;
 }

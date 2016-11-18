@@ -1,7 +1,7 @@
 % Plot the average temperature
 close % close previous figure
 clear all
-data = importdata('histogram.dat');
+data = importdata('../Task7/histogram.dat');
 
 
 % plot
@@ -19,11 +19,11 @@ integr=@(q)sum(data(1:nDats,1).^2.*(g(1:nDats)-1).*sin(q*data(1:nDats,1))./(data
 s=@(q)1+4*pi*100*integr(q);
 
 
+c=linspace(5,25,500);
 
 for i=1:500
-    b(i)=s(i/150);
+    b(i)=s(c(i));
 end
-c=linspace(0,5,500);
 plot(c,b)
 
 title('Static structure factor')

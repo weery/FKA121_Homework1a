@@ -19,7 +19,7 @@
 #define PI 3.141592653589
 int get_bin(double , double , double , double );
 
-
+double boundary_condition(double,double);
 
 /* Main program */
 int main()
@@ -253,9 +253,9 @@ int main()
         }
     } // equilibration/simulation
 
-    int n_x = 20;
-    int n_y = 20;
-    int n_z = 20;
+    int n_x = 30;
+    int n_y = 30;
+    int n_z = 30;
 
     double factor = PI*2.0/cell_length;
 
@@ -280,7 +280,9 @@ int main()
                         double complex expo=0;
                         for (int d = 0; d < nbr_of_dimensions; d++)
                         {
-                            expo+= qS[i][j][k][d]*q[r][d];
+                            double ri = q[r][d];
+                            ri=boundary_condition(ri,cell_length);
+                            expo+= qS[i][j][k][d]*ri;
                         }
                         expo=expo*I;
                         sum+= cexp(expo);
@@ -312,7 +314,7 @@ int main()
             min = dis[i];
     }
 
-    int k_bins=100;
+    int k_bins=50;
     double d_r = (max-min)/(1.0*k_bins);
     int bins[k_bins];
     for (int i = 0; i < n_x*n_y*n_z; i++)
@@ -357,4 +359,13 @@ int get_bin(double val , double min , double max , double  d_r)
     }
     return bin;
 }
-int get_bin(double , double , double , double );
+
+double boundary_condition(double u, double L)
+{
+
+    double f = fmod(u,L);
+    if (f < 0)
+        return -f;
+    else
+        return f;
+}

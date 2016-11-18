@@ -18,7 +18,7 @@
 #define PI 3.141592653589
 int get_bin(double , double , double , double );
 
-
+double boundary_condition(double,double);
 
 /* Main program */
 int main()
@@ -265,7 +265,12 @@ int main()
             {
                 for (int d = 0; d < nbr_of_dimensions; d++)
                 {
-                    distances[l][j] += pow(q[l][d]-q[j][d],2);
+                    double q1 = q[l][d];
+                    double q2 = q[j][d];
+                    q1=boundary_condition(q1,cell_length);
+                    q2=boundary_condition(q2,cell_length);
+
+                    distances[l][j] += pow(q1-q2,2);
                 }
                 distances[l][j] = sqrt(distances[l][j]);
                 dists(i,l,j)= distances[l][j];
@@ -382,7 +387,7 @@ for (int i = 0; i < nbr_of_particles; i++)
     // TO THIS ISH TODO
 
 
-
+    printf("Saved files");
 
     free(energy_kin);		energy_kin = NULL;
     printf("Här är jag1\n");
@@ -412,4 +417,14 @@ int get_bin(double val , double min , double max , double  d_r)
         bin++;
     }
     return bin;
+}
+
+double boundary_condition(double u, double L)
+{
+
+    double f = fmod(u,L);
+    if (f < 0)
+        return -f;
+    else
+        return f;
 }
