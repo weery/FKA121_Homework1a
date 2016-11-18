@@ -261,8 +261,6 @@ int main()
                 }
                 sum = sqrt(sum);
                 int bin = get_bin(sum,min,max,d_r);
-                if (bin >= k_bins)
-                    printf("Fuck");
                 bins2[bin]++;
             }
         }
@@ -303,7 +301,6 @@ int get_bin(double val , double min , double max , double  d_r)
     {
         current += d_r;
         bin++;
-        //printf("current: %.8f \t Val: %.8f, d_r: %.8f \n", current, val, d_r);
     }
     if (current > max)
         return --bin;
