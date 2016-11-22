@@ -1,21 +1,31 @@
-close % plot the energies
-% Created by Martin Gren 2014-10-25.
+%clear all, close all, clc
+clf
+addpath( genpath('.') );
 
-% load the data file
-data = importdata('energy.dat');
+s = strcat('energy0.00',int2str(5),'.dat');
+    data = importdata(s);
+    hold on
+    plot(data(:,1),data(:,3));
 
-%plot 
-figure;
-plot(data(:,1:20:end),data(:,2:20:end)+data(:,3:20:end),'-')
-hold on
-plot(data(:,1:20:end),data(:,2:20:end),'-')
-plot(data(:,1:20:end),data(:,3:20:end),'-')
+for i = 2:8
+    s = strcat('energy0.0',int2str(5*i),'.dat');
+    data = importdata(s);
+    hold on
+    plot(data(:,1),data(:,3));
+end
 
+text(2,5000000,'\downarrow 0.01')
+text(1,5000000,'\downarrow 0.02')
+text(5.2,28000000,'0.03 \uparrow')
+
+text(3,5000000,'\downarrow 0.005')
+text(4,5000000,'\downarrow 0.015')
+text(8,5000000,'0.025 \downarrow')
+
+text(3,32000000,'0.035 \downarrow')
+text(4,40000000,'0.04 \downarrow')
 % labels
-xlabel('Time / [ASU]');
-ylabel('Energy / [ASU]');
+xlabel('Time / [ps]','Interpreter','Latex');
+ylabel('Energy / [eV]','Interpreter','Latex');
 
-% legend
-legend('Total energy','Potential energy','Kinetic energy');
-
-title('Awesome title')
+title('Total energy over time','Interpreter','Latex')

@@ -21,7 +21,7 @@ const double electron_density[75] = {2.0210, 2.2730, 2.5055, 2.7380, 2.9705, 3.2
 const double embedding_energy[65] = {0, 0.1000, 0.2000, 0.3000, 0.4000, 0.5000, 0.6000, 0.7000, 0.8000, 0.9000, 1.0000, 1.1000, 1.2000, 0, -1.1199, -1.4075, -1.7100, -1.9871, -2.2318, -2.4038, -2.5538, -2.6224, -2.6570, -2.6696, -2.6589, -2.6358, -18.4387, -5.3706, -2.3045, -3.1161, -2.6175, -2.0666, -1.6167, -1.1280, -0.4304, -0.2464, -0.0001, 0.1898, 0.2557, 86.5178, 44.1632, -13.5018, 5.3853, -0.3996, 5.9090, -1.4103, 6.2976, 0.6785, 1.1611, 1.3022, 0.5971, 0.0612, -141.1819, -192.2166, 62.9570, -19.2831, 21.0288, -24.3978, 25.6930, -18.7304, 1.6087, 0.4704, -2.3503, -1.7862, -1.7862};
 
 
-#define k_b 8.617e10−5 // (eV)
+#define k_b 0.00008617 // (eV)
 
 /* Evaluates the spline in x. */
 
@@ -438,10 +438,10 @@ double get_virial_AL(double positions[][3], double cell_length, int nbr_atoms)
 
 double get_kinetic_AL(double velocities[][3], int nbr_of_dimensions, int nbr_atoms, double m_AL)
 {
-	double energy=0;
+	double energy = 0;
 	for (int j = 0; j < nbr_atoms; j++) {
 		for (int k = 0; k < nbr_of_dimensions; k++) {
-			energy += m_AL * pow(velocities[j][k], 2) / 2;
+			energy += m_AL * pow(velocities[j][k], 2) / 2.0;
 		}
 	}
 	return energy;
@@ -449,21 +449,21 @@ double get_kinetic_AL(double velocities[][3], int nbr_of_dimensions, int nbr_ato
 
 
 /* Calculation of instantaneous temperature, se 5.2 in molecular dynamics*/
-double instantaneous_temperature(double kinetic_energy,int nbr_of_particles)
+double instantaneous_temperature(double kinetic_energy, int nbr_of_particles)
 {
-	double temperature= 0;
-	temperature = 2/(k_b*nbr_of_particles*3) * kinetic_energy;
+	double temperature = 0;
+	temperature = 2.0/(k_b*nbr_of_particles*3) * kinetic_energy;
 	return temperature;
 }
 
 /* Calculation of temperature based on averaged kinetic energy */
-double averaged_temperature(double* kinetic_energy,int nbr_of_particles,double timestep ,int current_nbr_of_timesteps)
+double averaged_temperature(double* kinetic_energy, int nbr_of_particles, int current_nbr_of_timesteps)
 {
-    double temperature=0;
-    double factor = 2/(3*k_b*nbr_of_particles*(current_nbr_of_timesteps+1)*timestep);
+    double temperature = 0;
+    double factor = 2.0/(3.0*k_b*nbr_of_particles*(current_nbr_of_timesteps+1.0));
     for (int i = 0; i < current_nbr_of_timesteps+1; i++)
     {
-        temperature +=kinetic_energy[i];
+        temperature += kinetic_energy[i];
     }
     temperature*=factor;
     return temperature;
@@ -471,22 +471,21 @@ double averaged_temperature(double* kinetic_energy,int nbr_of_particles,double t
 
 
 /* Calculation of instantaneous pressure, se 5.3 in molecular dynamics*/
-double instantaneous_pressure(double virial, double temperature, int nbr_of_particles,double volume)
+double instantaneous_pressure(double virial, double temperature, int nbr_of_particles, double volume)
 {
-	double pressure=0;
-	pressure += virial + temperature *k_b*nbr_of_particles/volume;
-	return pressure;
+	//double pressure = 0;
+	return (virial + temperature *k_b*nbr_of_particles) / volume;
 }
 
 /* Calculation of pressure based on averaged virial */
-double averaged_pressure(double* virial, double* kinetic_energy, double volume, int timestep, int current_nbr_of_timesteps)
+double averaged_pressure(double* virial, double* kinetic_energy, double volume, int current_nbr_of_timesteps)
 {
-    double pressure=0;
+    double pressure = 0;
     for (int i = 0; i < current_nbr_of_timesteps+1; i++)
     {
-        pressure +=virial[i]+2/(3*volume)*kinetic_energy[i];
-    }
-	pressure/=timestep*(current_nbr_of_timesteps+1);
+        pressure += (virial[i] + 2.0/3.0*kinetic_energy[i]);
 
+    }
+	pressure /= volume*(current_nbr_of_timesteps+1.0);
     return pressure;
 }

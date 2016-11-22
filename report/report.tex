@@ -2,7 +2,7 @@
 
 \input{settings}
 
-\title{H1a: Classical scattering by a central potential}
+\title{H1a: Molecular Dynamics simulation - static properties}
 \author{Victor Nilsson and Simon Nilsson}
 \date{\today}
 
@@ -12,30 +12,29 @@
 
 \section*{Introduction}
 
-Molecular dynamics is a simulation of the movement of atoms and molecules. What is of interest in such a simulations is e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.
+Molecular dynamics is a simulation of the movement of atoms and molecules. What is of interest in such a simulations is e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.\\
+
+For the homeproblems we simulate the dynamics of the aluminium atoms by simulating their interactions. At the start of each simulation the atoms are placed on a FCC lattice with lattice parameter $\unit[4.046]{Å}$. These atoms are initially displaced about $\unit[5]{\%}$ of the lattice parameter and their velocities are set to zero.
 
 \section*{Problem 1}
 
 \begin{figure}[H]
     \centering
-    \captionsetup[subfigure]{justification=centering}
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \resizebox{\columnwidth}{!}{\input{graphics/task1/energy01.tikz}}
-        \caption{$\Delta t =\unit[0.1]{ASU}$}
-        \label{fig:timestep_a}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \resizebox{\columnwidth}{!}{\input{graphics/task1/energy001.tikz}}
-        \caption{$\Delta t =\unit[0.01]{ASU}$}
-        \label{fig:timestep_b}
-    \end{subfigure}
-    \caption{For the different energy simulations, the same number of timesteps was used but the lengths of the different timesteps makes them evolve over different times. As can be seen in \ref{fig:timestep_a}, the energy explodes due to insufficient resolution of the time, something which is not present in \ref{fig:timestep_b}.}
+    \includegraphics[width=\textwidth]{graphics/Task1/energy.png}
+    \caption{For different time-steps the energy evolves differently over time, in the figure we there are four simulations with different time-steps. The time-steps increases with $\unit[0.01]{ps}$ for each simulation and the total energy starts to increase for time-steps of $\unit[0.03]{ps}$.}
     \label{fig:timestep}
 \end{figure}
 
-As we can see in figure \ref{fig:timestep} the required timestep is between $\Delta t = 0.1 \sim \unit[0.01]{ASU}$, so for the rest of the assignment a timestep of $\Delta t = \unit[0.01]{ASU}$ will be used.
+For the simulations we updated the positions and velocities of the particles by applying the velocity verlet algorithm.
+
+\begin{itemize}
+\item $v \leftarrow v +\frac{1}{2}a\Delta t, \;$ update velocity from current acceleration.
+\item $q \leftarrow q +v\Delta t, \;$ update displacement from current velocity.
+\item $a \leftarrow a, \;$ update acceleration from the applied forces.
+\item $v \leftarrow v +\frac{1}{2}a\Delta t, \;$ update velocity from new acceleration.
+\end{itemize}
+
+For this algorithm to be stable, we need to choose a time-step that conserves the total energy. With the algorithm implemented we can simulate the system and study the time evolution of the total energies. In Fig. \ref{fig:timestep} we can see the implications of different time-steps. We can see that the energy is unstable for $\Delta t = \unit[0.03]{ps}$ and stable for the previous one at $\Delta t = \unit[0.025]{ps}$. To have some safety margin we will, for the rest of the report, use a time-step of $\Delta t = \unit[0.005]{ps}$.
 
 \section*{Problem 3}
 
