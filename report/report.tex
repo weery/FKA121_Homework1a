@@ -37,6 +37,8 @@ Molecular dynamics is a simulation of the movement of atoms and molecules. What 
 
 As we can see in figure \ref{fig:timestep} the required timestep is between $\Delta t = 0.1 \sim \unit[0.01]{ASU}$, so for the rest of the assignment a timestep of $\Delta t = \unit[0.01]{ASU}$ will be used.
 
+
+
 \section*{Problem 3}
 
 \begin{figure}[H]
@@ -65,6 +67,14 @@ As we can see in figure \ref{fig:timestep} the required timestep is between $\De
     \caption{After the equilibrium, both the pressure and the temperature needs some time to stabilize after rescaling the velocities, but remains stable for longer time. The equalisation temperature was set to $\unit[500]{C^\circ}$.}
     \label{fig:equilibrium500}
 \end{figure}
+
+The third problem was about implementing routines for equilibrating the molecular dynamics system to a specified temperature, $T_{eq} = 500^\circ$ C, at pressure $P_{eq} = 1$ atm. The equilibration was implemented using scaling of the velocities and the total volume, and consquently the positions of the molecules as well. The equations used can be found in appendix D in the molecular dynamics lecture notes \cite{lecnotes}. The goal was to study the temperature and pressure after the equilibration process through constant energy and volume simulation. We also plot the trajectories of a few particles to show that the system is still in a solid state.
+
+The three main parameters for the equilibration are the timestep (used in the velocity Verlet algorithm) $\Delta t$ and the temperature and pressure relaxation times, $\tau_T$ and $\tau_P$ respectively. The timestep used was 5 fs and the temperature relaxation time was chosen to be $\tau_T = 100 \Delta t$, i.e. choosing the $\Delta t/\tau_T$ quotient in the $\alpha_T$ calculation to be equal 0.01.
+
+When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$, but $\tau_P$ is chosen in such a way that the quotient $\kappa_T \Delta t / \tau_P$.
+
+% parameters: tau, delta t, kappa, 
 
 In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. There are some fluctuations in the beginning due to the rescaling of the velocities.
  
@@ -174,8 +184,11 @@ Below (Fig.~\ref{fig:StaticStructure}) are two approximations of the static stru
 \section*{Concluding discussion}
 
 
+\vfill
+\bibliography{references}
+\bibliographystyle{plain} %TODO set bibstyle
 
-
+\newpage
 \appendix
 \section{Source code}
 
