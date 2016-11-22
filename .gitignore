@@ -23,6 +23,8 @@ report/*.log
 report/*.gz
 report/report.pdf
 */report.pdf
+*.bbl
+*.blg
 
 # Tikz files in code
 code/*.tikz
