@@ -19,14 +19,14 @@ integr=@(q)sum(data(1:nDats,1).^2.*(g(1:nDats)-1).*sin(q*data(1:nDats,1))./(data
 s=@(q)1+4*pi*100*integr(q);
 
 
-c=linspace(1,25,5000);
+c=linspace(2,25,5000);
 
 for i=1:5000
     b(i)=s(c(i));
 end
 plot(c,b)
 
-xlim([1, 25])
+xlim([c(1), c(end)])
 
 title('Static structure factor')
 xlabel('q')
