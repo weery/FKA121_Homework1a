@@ -45,36 +45,36 @@ For this algorithm to be stable, we need to choose a time-step that conserves th
         \centering
         \includegraphics[width=\textwidth]{graphics/task3/pressure.png}
     \end{subfigure}
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{graphics/task3/pressure_avg.png}
-    \end{subfigure}
+    %\begin{subfigure}[b]{0.40\textwidth}
+    %    \centering
+    %    \includegraphics[width=\textwidth]{graphics/task3/pressure_avg.png}
+    %\end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task3/temperature.png}
     \end{subfigure}
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{graphics/task3/temperature_avg.png}
-    \end{subfigure}
+    %\begin{subfigure}[b]{0.40\textwidth}
+    %    \centering
+    %    \includegraphics[width=\textwidth]{graphics/task3/temperature_avg.png}
+    %\end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task3/traj.png}
     \end{subfigure}
-    \caption{\textit{Upper left:} The time evolution of the pressure during equilibration. The target pressure was set to 1 atm. \textit{Upper right:} The time evolution of the temperature during equilibration. The target temperature was set to 500$^\circ$ C and we can see that it quickly reaches the target temperature. \textit{Lower:} Trajectories for three of the aluminium particles during 100 ps after the equilibration process. As we can see they stay close to the initial position, which indicates that the system is in its solid state.}
+    \caption{\textit{Upper left:} The time evolution of the pressure during equilibration. The target pressure was set to 1 atm. \textit{Upper right:} The time evolution of the temperature during equilibration. The target temperature was set to 500$^\circ$ C and we can see that it quickly reaches the target temperature. \textit{Lower:} 3D plot of trajectories for three of the aluminium particles during 100 ps after the equilibration process. As we can see they stay close to the initial position, which indicates that the system is in its solid state. Note that the scales are not the same on all axes.}
     \label{fig:equilibrium500}
 \end{figure}
 
-The third problem was about implementing routines for equilibrating the molecular dynamics system to a specified temperature, $T_{eq} = 500^\circ$ C, at pressure $P_{eq} = 1$ atm. The equilibration was implemented using scaling of the velocities and the total volume, and consquently the positions of the molecules as well. The equations used can be found in appendix D in the molecular dynamics lecture notes \cite{lecnotes}. The goal was to study the temperature and pressure after the equilibration process through constant energy and volume simulation. We also plot the trajectories of a few particles to show that the system is still in a solid state.
+The third problem was about implementing routines for equilibrating the molecular dynamics system to a specified temperature, $T_{eq} = 500^\circ$ C, at pressure $P_{eq} = 1$ atm. The equilibration was implemented using scaling of the velocities and the total volume, and consquently the positions of the molecules as well. The equations used can be found in appendix D in the molecular dynamics lecture notes \cite{lecnotes}. The goal was to study the temperature and pressure after the equilibration process through constant energy and volume simulation. We also plot the trajectories of a few particles to show that the system is still in a solid state (Fig. \ref{fig:equilibrium500}, lower subfigure).
 
 The three main parameters for the equilibration are the timestep (used in the velocity Verlet algorithm) $\Delta t$ and the temperature and pressure relaxation times, $\tau_T$ and $\tau_P$ respectively. The timestep used was 5 fs and the temperature relaxation time was chosen to be $\tau_T = 100 \Delta t$, i.e. choosing the $\Delta t/\tau_T$ quotient in the $\alpha_T$ calculation to be equal 0.01.
 
-When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$, but $\tau_P$ is chosen in such a way that the quotient $\kappa_T \Delta t / \tau_P$.
+When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$ \cite{knowledgedoor}, but $\tau_P$ is instead chosen in such a way thatv $\kappa_T$ is cancelled out. For these simulation we chose $\tau_P = 100\Delta t \kappa_T$.
 
 % parameters: tau, delta t, kappa, 
 
 In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. There are some fluctuations in the beginning due to the rescaling of the velocities.
- 
+
 
 \section*{Problem 4}
 
@@ -85,18 +85,18 @@ In order to set the system to a certain temperature, a technique involving scali
         \centering
         \includegraphics[width=\textwidth]{graphics/task4/pressure.png}
     \end{subfigure}
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{graphics/task4/pressure_avg.png}
-    \end{subfigure}
+    %\begin{subfigure}[b]{0.40\textwidth}
+    %    \centering
+    %    \includegraphics[width=\textwidth]{graphics/task4/pressure_avg.png}
+    %\end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task4/temperature.png}
     \end{subfigure}
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{graphics/task4/temperature_avg.png}
-    \end{subfigure}
+    %\begin{subfigure}[b]{0.40\textwidth}
+    %    \centering
+    %    \includegraphics[width=\textwidth]{graphics/task4/temperature_avg.png}
+    %\end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task4/traj.png}
@@ -105,6 +105,13 @@ In order to set the system to a certain temperature, a technique involving scali
     \label{fig:equilibrium700}
 \end{figure}
 
+The fourth problem was very similar to the third one, with the exception that the system was to be equilibrated to a temperature of 700$^\circ$ C---which is higher than the melting point of aluminium (660$^\circ$ C \cite{wiki-al}). Effectively, what is done is that the system is melted. The target pressure was kept at 1 atm. Other parameters are also the same as in problem 3.
+
+To ensure that the system would enter its melted state, at first, a target temperature of $1\,500^\circ$ C was set which was then lowered to 700$^\circ$ C. The switch can clearly be seen in both the pressure and temperature plots (upper left and right in Fig. \ref{fig:equilibrium700}).
+
+Like in the previous problem, a few trajectories have been plotted (Fig. \ref{fig:equilibrium700}, lower). Unlike problem 3, we see that the particles do not remain close to their starting position for longer times, indicating that the system has indeed melted.
+
+After equilibration to 700$^\circ$ C and 1 atm the average temperature obtained were approx. 714$^\circ$ C and $3.82 \cdot 10^{-4}$ eV/\r{A}$^3$. Similar to the third problem, the average pressure is much larger than intended, but we have not found a way of correcting it.
 
 \section*{Problem 5}
 
