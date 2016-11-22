@@ -14,7 +14,7 @@
 
 Molecular dynamics is a simulation of the movement of atoms and molecules. What is of interest in such a simulations is e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.\\
 
-For the homeproblems we simulate the dynamics of the aluminium atoms by simulating their interactions. At the start of each simulation the atoms are placed on a FCC lattice with lattice parameter $\unit[4.046]{Å}$. These atoms are initially displaced about $\unit[5]{\%}$ of the lattice parameter and their velocities are set to zero.
+For the homeproblems we simulate the dynamics of the aluminium atoms by simulating their interactions. At the start of each simulation the atoms are placed on a FCC lattice with lattice parameter $\unit[4.046]{Å}$ \cite{al_wiki}. These atoms are initially displaced about $\unit[5]{\%}$ of the lattice parameter and their velocities are set to zero.
 
 \section*{Problem 1}
 
@@ -36,8 +36,6 @@ For the simulations we updated the positions and velocities of the particles by 
 
 For this algorithm to be stable, we need to choose a time-step that conserves the total energy. With the algorithm implemented we can simulate the system and study the time evolution of the total energies. In Fig. \ref{fig:timestep} we can see the implications of different time-steps. We can see that the energy is unstable for $\Delta t = \unit[0.03]{ps}$ and stable for the previous one at $\Delta t = \unit[0.025]{ps}$. To have some safety margin we will, for the rest of the report, use a time-step of $\Delta t = \unit[0.005]{ps}$.
 
-
-
 \section*{Problem 3}
 
 \begin{figure}[H]
@@ -47,23 +45,23 @@ For this algorithm to be stable, we need to choose a time-step that conserves th
         \centering
         \includegraphics[width=\textwidth]{graphics/task3/pressure.png}
     \end{subfigure}
-    %\begin{subfigure}[b]{0.40\textwidth}
-    %    \centering
-    %    \includegraphics[width=\textwidth]{graphics/task3/pressure_avg.png}
-    %\end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task3/pressure_avg.png}
+    \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task3/temperature.png}
     \end{subfigure}
-    %\begin{subfigure}[b]{0.40\textwidth}
-    %    \centering
-    %    \includegraphics[width=\textwidth]{graphics/task3/temperature_avg.png}
-    %\end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task3/temperature_avg.png}
+    \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task3/traj.png}
     \end{subfigure}
-    \caption{\textit{Upper left:} Time evolution of the pressure during equilibration. The target pressure was set to 1 atm. \textit{Upper right:} The time evolution of the temperature during equilibration. The target temperature was set to 500$^\circ$ C and we can see that it quickly reaches the target temperature. \textit{Lower:} Trajectories for three of the aluminium particles during 100 ps after the equilibration process. As we can see they stay close to the initial position, which indicates that the system is in its solid state.}
+    \caption{After the equilibrium, both the pressure and the temperature needs some time to stabilize after rescaling the velocities, but remains stable for longer time. The equalisation temperature was set to $\unit[500]{C^\circ}$.}
     \label{fig:equilibrium500}
 \end{figure}
 
@@ -71,11 +69,11 @@ The third problem was about implementing routines for equilibrating the molecula
 
 The three main parameters for the equilibration are the timestep (used in the velocity Verlet algorithm) $\Delta t$ and the temperature and pressure relaxation times, $\tau_T$ and $\tau_P$ respectively. The timestep used was 5 fs and the temperature relaxation time was chosen to be $\tau_T = 100 \Delta t$, i.e. choosing the $\Delta t/\tau_T$ quotient in the $\alpha_T$ calculation to be equal 0.01.
 
-When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$ according to \cite{}, but $\tau_P$ is chosen in such a way that the quotient $\kappa_T \Delta t / \tau_P$ evaluates to 0.01 \r{A}$^3$ / eV.
+When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$, but $\tau_P$ is chosen in such a way that the quotient $\kappa_T \Delta t / \tau_P$.
 
-In Fig. \ref{fig:equilibrium500} we can see the time evolution of the temperature (upper right) and the pressure (upper left). Both the pressure and the temperature seem to reach the intended values quite quickly, indicating that the equilibration process is working. From the trajectories in the lower subfigure we also see that the system is still in its solid state, as the particles remain close to the starting point after the equilibration. The time averages of the temperature and pressure post-equilibration were computed to be approx. 503$^\circ$ C and approx. $2.2 \cdot 10^{-4}$ eV/\r{A}$^3$.
+% parameters: tau, delta t, kappa, 
 
-The obtained pressure value is larger than the one equilibrated for; 1 atm is roughly $10^{-6}$ eV/\r{A}$^3$. However, we are unsure why this is the case. It is possible that a shorter time step, longer equilibration and post-equilibration measuring and other values for the relaxation time parameters could fix this issue, but we have not been able to find such a configuration.
+In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. There are some fluctuations in the beginning due to the rescaling of the velocities.
  
 
 \section*{Problem 4}
@@ -87,43 +85,52 @@ The obtained pressure value is larger than the one equilibrated for; 1 atm is ro
         \centering
         \includegraphics[width=\textwidth]{graphics/task4/pressure.png}
     \end{subfigure}
-    %\begin{subfigure}[b]{0.40\textwidth}
-    %    \centering
-    %    \includegraphics[width=\textwidth]{graphics/task4/pressure_avg.png}
-    %\end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task4/pressure_avg.png}
+    \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task4/temperature.png}
     \end{subfigure}
-    %\begin{subfigure}[b]{0.40\textwidth}
-    %    \centering
-    %    \includegraphics[width=\textwidth]{graphics/task4/temperature_avg.png}
-    %\end{subfigure}
+    \begin{subfigure}[b]{0.40\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphics/task4/temperature_avg.png}
+    \end{subfigure}
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{graphics/task4/traj.png}
     \end{subfigure}
     \caption{After the equilibrium, both the pressure and the temperature needs some time to stabilize after rescaling the velocities, but remains stable for longer time. The equalisation temperature was first set to $\unit[1000]{C^\circ}$ for the smelting and then the temperature was reduced to $\unit[700]{C^\circ}$.}
-    \label{fig:equilibrium700}
+    \label{fig:equilibrium500}
 \end{figure}
 
 
 \section*{Problem 5}
 
-$\unit[1]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}}$ \\
-$C_v\left[AL\right]:\unit[24.20]{\frac{j}{mol K}}=\unit[1.0366e-05]{\frac{eV}{K}}$
+\noindent One interesting parameter of a material is the heat capacity. We can calculate it from fluctuations in either the kinetic or the potential energies,
 
-\noindent From our MD simulations we obtained the following values for $C_V$ when using the potential and kinetic energy fluctuations respectively.
+\begin{equation}
+C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{kin}\right)^2  \right\rangle_{NVE} \right]^{-1},
+\end{equation}
+
+\begin{equation}
+C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{pot}\right)^2  \right\rangle_{NVE} \right]^{-1}.
+\end{equation}
+
+From our MD simulations we obtained the following values for $C_V$ when using the potential and kinetic energy fluctuations respectively.
 \begin{table}[h!]
 	\centering
 	\caption{Heat capacity obtained by measuring energy fluctuations.}
 	\begin{tabular}{l|cc}
 		\hline \textbf{Temperature} & \textbf{500$^\circ$ C} & \textbf{700$^\circ$ C} \\ \hline
-		$C_V / (\unit{eV/kg\,K})$ (kinetic) & $5.819521 \cdot 10^{-2}$ & $5.056438 \cdot 10^{-2}$ \\
-		$C_V / (\unit{eV/kg\,K})$ (potential) & $5.836188 \cdot 10^{-2}$ & $5.056541 \cdot 10^{-2}$ \\ \hline
+		$C_V / (\unit{eV/kg\,K})$ (kinetic) & $4.9634 \cdot 10^{-2}$ & $6.7474 \cdot 10^{-2}$ \\
+		$C_V / (\unit{eV/kg\,K})$ (potential) & $4.9686 \cdot 10^{-2}$ & $6.7579 \cdot 10^{-2}$ \\ \hline
 	\end{tabular}
 	\label{tab:prob5}
 \end{table}
+
+
 
 \section*{Problem 6}
 
@@ -214,7 +221,7 @@ Below (Fig.~\ref{fig:StaticStructure}) are two approximations of the static stru
 \lstinputlisting[language=c, numbers=left]{../code/Task8/alpotential.c}
 
 
-  
+
 
 \begin{comment}
 \appendix
