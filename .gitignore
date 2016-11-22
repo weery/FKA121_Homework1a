@@ -21,6 +21,8 @@ code/*/MD
 report/*.aux
 report/*.log
 report/*.gz
+report/report.pdf
+*/report.pdf
 
 # Tikz files in code
 code/*.tikz
