@@ -38,7 +38,7 @@ int main()
     double timestep;
     double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
-    double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
+
 
     FILE *file;
 
@@ -49,7 +49,7 @@ int main()
     double f[nbr_of_particles][nbr_of_dimensions] = { 0 }; // Forces
 
     /* Allocate memory for large vectors */
-    /* Simulate 3 dimensional data by placing iniitalizeing a 1-dimensional array*/
+    /* Simulate 3 dimensional data by placing iniitalizeing a 1-dimensional array */
     #define qq(i,j,k) (disp_arr[nbr_of_particles*nbr_of_dimensions*i+nbr_of_dimensions*j+k])
     double* disp_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_dimensions*sizeof(double));
 
@@ -63,8 +63,7 @@ int main()
 
 
 
-    //TODO go over parameters again
-    /* Initialize parameters*/
+    /* Initialize parameters */
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
@@ -125,7 +124,7 @@ int main()
                 }
             }
 
-            /* Update displacement*/
+            /* Update displacement */
             for (int j = 0; j < nbr_of_particles; j++){
                 for (int k = 0; k < nbr_of_dimensions; k++){
                     q[j][k] += timestep * v[j][k];
@@ -135,7 +134,7 @@ int main()
             /* Forces */
             get_forces_AL(f,q,cell_length,nbr_of_particles);
 
-            /* Final velocity*/
+            /* Final velocity */
             for (int j = 0; j < nbr_of_particles; j++){
                 for (int k = 0; k < nbr_of_dimensions; k++){
                     v[j][k] += timestep * 0.5* f[j][k]/m_AL;
@@ -143,7 +142,7 @@ int main()
             }
 
             /* Calculate energy */
-            // Kinetic energy
+            /* Kinetic energy */
             energy_kin_eq = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
             virial_eq = get_virial_AL(q, cell_length, nbr_of_particles);
@@ -156,12 +155,10 @@ int main()
             pressure[equil*(nbr_of_timesteps_eq-1) + i] = inst_pressure_eq;
 
 
-            // Update alhpas
+            // Update alphas
             alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
             alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
 
-            // DEBUG:alpha
-            //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
 
             // Scale velocities
             for (int j = 0; j < nbr_of_particles; j++){
@@ -287,18 +284,18 @@ int main()
         len_sq = sqrt(len_sq);
         for (int r=0; r < nbr_of_particles; r++)
         {
-            double complex expo=0;
+            double complex expo = 0;
             for (int d = 0; d < nbr_of_dimensions; d++)
             {
                 double ri = q[r][d];
-                ri=boundary_condition(ri,cell_length);
-                expo+= qs(i,d)*ri;
+                ri = boundary_condition(ri,cell_length);
+                expo += qs(i,d)*ri;
             }
-            expo=expo*I;
-            sum+= cexp(expo);
+            expo = expo*I;
+            sum += cexp(expo);
         }
         sum=conj(sum)*sum/nbr_of_particles;
-        s(i,0)=sum;
+        s(i,0) = sum;
         s(i,1) = len_sq;
     }
 
