@@ -245,7 +245,7 @@ int main()
 
 
     // Create Histogram
-
+    int n_part=0;
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
         for (int j = 1 ; j < nbr_of_particles; j++) {
@@ -260,7 +260,11 @@ int main()
                 double distance_sq = boundary_condition_dist_sq(q1, q2, cell_length);
                 double dist = sqrt(distance_sq);
                 int bin = get_bin(dist,min,max,d_r);
-                bins2[bin] += 2;
+                if (bin < k_bins)
+                {
+                    bins2[bin] += 2;
+                    n_part+=2;
+                }
             }
         }
     }
@@ -273,7 +277,9 @@ int main()
 
 
 
+
     /* Save data to file*/
+    printf("%i\n",n_part );
     file = fopen("histogram.dat","w");
     for (int i = 0; i < k_bins; i ++) {
         fprintf(file, "%e \t %i \t %i \t %e \n",d_r*(i-0.5), bins[i],bins2[i], Nideal[i]);
@@ -316,8 +322,8 @@ double boundary_condition_dist_sq(double u1[3], double u2[3], double L)
 	    u1[i] -= floor(u1[i]);
         u2[i] -= floor(u2[i]);
 	    d[i] = u1[i] - u2[i];
-	    //d[i] -= (double)((int)floor(d[i]+0.5));
-        d[i] -= (double)((int)floor(d[i]));
+	    d[i] -= (double)((int)floor(d[i]+0.5));
+        //d[i] -= (double)((int)floor(d[i]));
 	}
 
 	double sum = 0.0;
