@@ -15,9 +15,9 @@ g=data(:,3)./data(:,4)/1000/256;
 
 plot(data(:,1),g)
 
-[rad,top]=max(g);
+x=57;
+summation =sum(g(1:x)*4*pi.*data(1:x,1).^2)/256;
 
-summation =(sum(g(1:top))+sum(g(1:top+1)))/2;
 
 xlim([0,data(end,1)])
 title('Radial distribution function g(r)')
