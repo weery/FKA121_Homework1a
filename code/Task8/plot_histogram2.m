@@ -8,7 +8,7 @@ data = importdata('../Task7/histogram.dat');
 figure;
 %%plot(data(:,2))
 
-g=data(:,3)./data(:,4)/1000/256;
+g=data(:,3)./data(:,4)/1000/32;
 
 %plot(data(:,1),g)
 
@@ -19,7 +19,7 @@ integr=@(q)sum(data(1:nDats,1).^2.*(g(1:nDats)-1).*sin(q*data(1:nDats,1))./(data
 s=@(q)1+4*pi*100*integr(q);
 
 
-c=linspace(2,25,5000);
+c=linspace(5,25,5000);
 
 for i=1:5000
     b(i)=s(c(i));

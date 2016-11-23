@@ -189,7 +189,8 @@ int main()
 
     // Compute energies, temperature etc. at equilibrium
     double min = 0.0;
-    double max = sqrt(3*cell_length*cell_length);
+    //double max = sqrt(3.0*cell_length*cell_length/2.0);
+    double max = cell_length;
     double d_r = (max-min)/(1.0*k_bins);
     int bins[k_bins];
     int* bins2 = (int*) malloc(k_bins * sizeof(int));
@@ -313,8 +314,10 @@ double boundary_condition_dist_sq(double u1[3], double u2[3], double L)
 	    u2[i] /= L;
 
 	    u1[i] -= floor(u1[i]);
-	    d[i] = u1[i] - (u2[i] - floor(u2[i]));
-	    d[i] -= (double)((int)floor(d[i]+0.5));
+        u2[i] -= floor(u2[i]);
+	    d[i] = u1[i] - u2[i];
+	    //d[i] -= (double)((int)floor(d[i]+0.5));
+        d[i] -= (double)((int)floor(d[i]));
 	}
 
 	double sum = 0.0;

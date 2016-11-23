@@ -36,7 +36,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 1500.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
     double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
@@ -259,56 +259,93 @@ int main()
 
     double factor = PI*2.0/cell_length;
 
-    #define qs(i,d) (qs_arr[(nbr_of_dimensions)*i+d])
-    double* qs_arr = (double*)malloc((2*n_x+1)*(2*n_y+1)*(2*n_z+1)*(nbr_of_dimensions)*sizeof(double));
+    double qS[n_x][n_y][n_z][3];
+    for (int i = ceil(-n_x/2); i < floor(n_x/2); i++)
+        for (int j = ceil(-n_y/2); j < floor(n_y/2) ; j++)
+            for (int k = ceil(-n_z/2); k < floor(n_z/2); k++){
+                    int idx1=i+ceil(n_x/2);
+                    int idx2=j+ceil(n_y/2);
+                    int idx3=k+ceil(n_z/2);
+                    qS[idx1][idx2][idx3][0]=i*factor;
+                    qS[idx1][idx2][idx3][1]=j*factor;
+                    qS[idx1][idx2][idx3][2]=k*factor;
+                }
 
-    int nk = 0;
-    for (int i = -n_x; i < n_x; i++)
-        for (int j = -n_y; j< n_y; j++)
-            for (int k = -n_z; k < n_z ; k++)
+    double s[n_x][n_y][n_z];
+    for (int i = 0; i < n_x; i++)
+        for (int j = 0; j < n_y ; j++)
+            for (int k = 0; k < n_z; k++)
             {
-                qs(nk,0)=i*factor;
-                qs(nk,1)=j*factor;
-                qs(nk,2)=k*factor;
-                nk++;
+                if ( !((i==j) && (i==k) && (i==0))){
+                    double complex sum = 0;
+                    for (int r=0; r < nbr_of_particles; r++)
+                    {
+                        double complex expo=0;
+                        for (int d = 0; d < nbr_of_dimensions; d++)
+                        {
+                            double ri = q[r][d];
+                            ri=boundary_condition(ri,cell_length); // TODO check if right
+                            expo+= qS[i][j][k][d]*ri;
+                        }
+                        expo=expo*I;
+                        sum+= cexp(expo);
+                    }
+                    sum = cabs(sum);
+                    sum=sum*sum/nbr_of_particles;
+                    s[i][j][k]=sum;
+                }
             }
 
-    #define s(i,q) (s_arr[2*i+q])
-    double* s_arr = (double*)malloc((2*n_x+1)*(2*n_y+1)*(2*n_z+1)*(2)*sizeof(double));
-
-    for (int i = 1; i < nk; i++)
+    double data[n_x*n_y*n_z];
+    double dis[n_x*n_y*n_z];
+    int iterator =0;
+    for (int i = 0; i < n_x; i++)
+        for (int j = 0; j < n_y ; j++)
+            for (int k = 0; k < n_z; k++)
+            {
+                double dist1 = i-ceil(n_x);
+                double dist2 = i-ceil(n_y);
+                double dist3 = i-ceil(n_z);
+                dist1 = dist1*dist1;
+                dist2 = dist2*dist2;
+                dist3 = dist3*dist3;
+                dis[iterator] =sqrt(dist1+dist2+dist3);
+                data[iterator] = s[i][j][k];
+                iterator++;
+            }
+    double max =0;
+    double min = 1e10;
+    for (int i = 0; i < n_x*n_y*n_z; i++ )
     {
-        double complex sum = 0;
-        double len_sq = 0;
-        for (int d = 0; d < nbr_of_dimensions; d++)
-        {
-            len_sq += qs(i,d)*qs(i,d);
-        }
-        len_sq = sqrt(len_sq);
-        for (int r=0; r < nbr_of_particles; r++)
-        {
-            double complex expo=0;
-            for (int d = 0; d < nbr_of_dimensions; d++)
-            {
-                double ri = q[r][d];
-                ri=boundary_condition(ri,cell_length); // TODO check if right
-                expo+= qs(i,d)*ri;
-            }
-            expo=expo*I;
-            sum+= cexp(expo);
-        }
-        sum = cabs(sum);
-        sum=sum*sum/nbr_of_particles;
-        s(i,0)=sum;
-        s(i,1) = len_sq;
+        if (dis[i] > max)
+            max = dis[i];
+        if (dis[i] < min)
+            min = dis[i];
     }
 
-    file = fopen("sq.dat","w");
-    for (int i = 0; i < n_x*n_y*n_z; i ++) {
-        fprintf(file, "%e \t %e \n", s(i,0), s(i,1));
+    int k_bins=200;
+    double d_r = (max-min)/(1.0*k_bins);
+    int bins[k_bins];
+    for (int i = 0; i < n_x*n_y*n_z; i++)
+    {
+        int bin = get_bin(data[i],min,max,d_r);
+        bins[bin]++;
     }
+
+    file = fopen("data.dat","w");
+    for (int i = 0; i < k_bins; i++)
+    {
+        fprintf(file, "%e \t %i \n", (double)(min+d_r*i*1.0), bins[i]);
+    }
+
     fclose(file);
-
+    /*
+    file = fopen("data.dat","w");
+    for (int i = 0; i < n_x*n_y*n_z; i ++)
+    {
+        fprintf(file, "%e \t %e \n",dis[i],data[i] );
+    }
+    fclose(file);*/
 
     free(energy_kin);		energy_kin = NULL;
     free(energy); 			energy = NULL;
