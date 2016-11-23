@@ -1,9 +1,6 @@
-/*
- MD_main.c
+/* MD_main.c */
 
- Created by Anders Lindman on 2013-10-31.
- */
-
+/* Includes */
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -11,15 +8,21 @@
 #include <string.h>
 #include "initfcc.h"
 #include "alpotential.h"
+
+/* Defines */
 #define nbr_of_particles 256
 #define nbr_of_dimensions 3
 
+
 /* Main program */
+/* ============ */
 int main()
 {
     srand(time(NULL));
 
     /* Simulation parameters */
+    /* ===================== */
+
     double m_AL; // Mass of atom
     double cell_length; // Side length of supercell
 
@@ -77,8 +80,8 @@ int main()
         /* Initial conditions */
         /* ================== */
 
-        for (int i = 0; i < nbr_of_particles; i++){
-            for (int j = 0; j < nbr_of_dimensions; j++){
+        for (int i = 0; i < nbr_of_particles; i++) {
+            for (int j = 0; j < nbr_of_dimensions; j++) {
 
                 // Initial perturbation from equilibrium
                 q[i][j] +=lattice_spacing* initial_displacement
@@ -95,19 +98,19 @@ int main()
         /* Simulation */
         /* ========== */
 
-        for (int i = 1; i < nbr_of_timesteps; i++)
-        {
+        for (int i = 1; i < nbr_of_timesteps; i++) {
+
             /** Verlet algorithm **/
             /* Half step for velocity */
-            for (int j = 0; j < nbr_of_particles; j++){
-                for (int k = 0; k < nbr_of_dimensions; k++){
+            for (int j = 0; j < nbr_of_particles; j++) {
+                for (int k = 0; k < nbr_of_dimensions; k++) {
                     v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
                 }
             }
 
             /* Update displacement */
-            for (int j = 0; j < nbr_of_particles; j++){
-                for (int k = 0; k < nbr_of_dimensions; k++){
+            for (int j = 0; j < nbr_of_particles; j++) {
+                for (int k = 0; k < nbr_of_dimensions; k++) {
                     q[j][k] += timestep * v[j][k];
                 }
             }
@@ -116,23 +119,26 @@ int main()
             get_forces_AL(f,q,cell_length,nbr_of_particles);
 
             /* Final velocity */
-            for (int j = 0; j < nbr_of_particles; j++){
-                for (int k = 0; k < nbr_of_dimensions; k++){
+            for (int j = 0; j < nbr_of_particles; j++) {
+                for (int k = 0; k < nbr_of_dimensions; k++) {
                     v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
                 }
             }
 
 
             /* Calculate energy */
-            /* ================ */
+            /* ---------------- */
 
             /* Potential energy */
             energy_pot[i] = get_energy_AL(q,cell_length,nbr_of_particles);
             /* Kinetic energy */
             energy_kin[i] = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
         }
-        char str[80];
-        char S[3];
+        
+        char str[64]; 	// String buffer
+        char S[6]; 		// At least 6 characters are needed
+        				// for suffix: "0." + 3 decimals + \0
+
         sprintf(S, "%.3f", timestep);
 
         strcpy (str,"data/energy");
@@ -140,12 +146,15 @@ int main()
         strcat (str,".dat");
 
 
+
         /* Save energies to file */
+        /* ===================== */
+
         file = fopen(str,"w");
 
         double current_time;
-        for (int i = 0; i < nbr_of_timesteps; i ++)
-        {
+        for (int i = 0; i < nbr_of_timesteps; i++) {
+
             current_time = i*timestep;
             fprintf(file, "%.4f \t", current_time);
             fprintf(file, "%.4f \t", energy_pot[i]);
@@ -154,9 +163,8 @@ int main()
         fclose(file);
 
 
-
-        free(energy_kin); energy_kin=NULL;
-        free(energy_pot); energy_pot=NULL;
+        free(energy_kin); energy_kin = NULL;
+        free(energy_pot); energy_pot = NULL;
     }
 
     return 0;
