@@ -62,13 +62,7 @@ int main()
     double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
     double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
 
-<<<<<<< HEAD
     /* Initialize parameters*/
-=======
-
-
-    /* Initialize parameters */
->>>>>>> 9f1bf687d88c364af687e2ccc4fb4b992bf51120
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
@@ -162,7 +156,8 @@ int main()
 
             // Update alphas
             alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+            //alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+            alpha_P = 1.0 - 0.01*(pressure_eq - inst_pressure_eq);
 
 
             // Scale velocities
@@ -272,7 +267,6 @@ int main()
             {
                 */
 
-    double max = 0;
     for (int i = -n_x; i < n_x; i++)
         for (int j = -n_y; j< n_y; j++)
             for (int k = -n_z; k < n_z ; k++)
@@ -304,7 +298,6 @@ int main()
         s(i,1)=0;
         for (int t = 1999; t <nbr_of_timesteps;t++ )
         {
-<<<<<<< HEAD
             double sum1 = 0;
             double sum2 = 0;
             for (int r=0; r < nbr_of_particles; r++)
@@ -329,21 +322,6 @@ int main()
         s(i,0)/=nbr_of_particles;
         s(i,1)/=nbr_of_particles;
         s(i,2) = len_sq;
-=======
-            double complex expo = 0;
-            for (int d = 0; d < nbr_of_dimensions; d++)
-            {
-                double ri = q[r][d];
-                ri = boundary_condition(ri,cell_length);
-                expo += qs(i,d)*ri;
-            }
-            expo = expo*I;
-            sum += cexp(expo);
-        }
-        sum=conj(sum)*sum/nbr_of_particles;
-        s(i,0) = sum;
-        s(i,1) = len_sq;
->>>>>>> 9f1bf687d88c364af687e2ccc4fb4b992bf51120
     }
 
     printf("%i\n", nk );
