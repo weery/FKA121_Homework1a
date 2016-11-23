@@ -115,17 +115,17 @@ After equilibration to 700$^\circ$ C and 1 atm the average temperature obtained 
 
 \section*{Problem 5}
 
-\noindent One interesting parameter of a material is the heat capacity. We can calculate it from fluctuations in either the kinetic or the potential energies,
+\noindent One interesting thermal property of a material is the heat capacity. We can calculate it from fluctuations in either the kinetic or the potential energies,
 
 \begin{equation}
-C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{kin}\right)^2  \right\rangle_{NVE} \right]^{-1},
+C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{kin}\right)^2  \right\rangle_{NVE} \right]^{-1}, \text{or}
 \end{equation}
 
 \begin{equation}
 C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{pot}\right)^2  \right\rangle_{NVE} \right]^{-1}.
 \end{equation}
 
-From our MD simulations we obtained the following values for $C_V$ when using the potential and kinetic energy fluctuations respectively.
+From our MD simulations we obtained the values found in {Tab. \ref{tab:prob5}} for $C_V$ when using the potential and kinetic energy fluctuations respectively.
 \begin{table}[h!]
 	\centering
 	\caption{Heat capacity obtained by measuring energy fluctuations.}
@@ -136,6 +136,9 @@ From our MD simulations we obtained the following values for $C_V$ when using th
 	\end{tabular}
 	\label{tab:prob5}
 \end{table}
+
+From experiments the heat capacity for aluminium in a solid is found to be $\unit[0.900]{J/g^\circ C}$ \cite{al_heat_solid} and for the liquid $\unit[1.18]{J/g^\circ C}$ \cite{al_heat_liquid}. The ratio of these are $1.18/0.9=1.3111$ which is almost the same ratio we found from our simulations,
+$6.7474/4.963=1.3594$.
 
 
 
