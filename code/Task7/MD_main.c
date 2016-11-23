@@ -265,6 +265,8 @@ int main()
                     bins2[bin] += 2;
                     n_part+=2;
                 }
+                else
+                    printf("%i\n", bin );
             }
         }
     }
@@ -279,7 +281,6 @@ int main()
 
 
     /* Save data to file*/
-    printf("%i\n",n_part );
     file = fopen("histogram.dat","w");
     for (int i = 0; i < k_bins; i ++) {
         fprintf(file, "%e \t %i \t %i \t %e \n",d_r*(i-0.5), bins[i],bins2[i], Nideal[i]);

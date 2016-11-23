@@ -12,12 +12,13 @@
 #include "alpotential.h"
 #include <complex.h>
 #define nbr_of_particles 256
-#define nbr_of_timesteps 1000
+#define nbr_of_timesteps 2000
 #define nbr_of_timesteps_eq 4000
 #define nbr_of_dimensions 3
 
 #define PI 3.141592653589
 int get_bin(double , double , double , double );
+double get_length(double*, int);
 
 double boundary_condition(double,double);
 
@@ -61,9 +62,6 @@ int main()
     double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
     double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
 
-
-
-    //TODO go over parameters again
     /* Initialize parameters*/
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
@@ -253,9 +251,9 @@ int main()
         }
     } // equilibration/simulation
 
-    int n_x = 30;
-    int n_y = 30;
-    int n_z = 30;
+    int n_x = 3;
+    int n_y = 3;
+    int n_z = 3;
 
     double factor = PI*2.0/cell_length;
 
@@ -263,6 +261,14 @@ int main()
     double* qs_arr = (double*)malloc((2*n_x+1)*(2*n_y+1)*(2*n_z+1)*(nbr_of_dimensions)*sizeof(double));
 
     int nk = 0;
+    /*
+    for (int i = -n_x; i < n_x; i++)
+        for (int j = -n_y; j< n_y; j++)
+            for (int k = -n_z; k < n_z ; k++)
+            {
+                */
+
+    double max = 0;
     for (int i = -n_x; i < n_x; i++)
         for (int j = -n_y; j< n_y; j++)
             for (int k = -n_z; k < n_z ; k++)
@@ -273,40 +279,85 @@ int main()
                 nk++;
             }
 
-    #define s(i,q) (s_arr[2*i+q])
-    double* s_arr = (double*)malloc((2*n_x+1)*(2*n_y+1)*(2*n_z+1)*(2)*sizeof(double));
+    #define s(i,q) (s_arr[3*i+q])
+    double* s_arr = (double*)malloc((2*n_x+1)*(2*n_y+1)*(2*n_z+1)*(3)*sizeof(double));
 
+    printf("%i\n", nk );
+
+
+    double max =0;
     for (int i = 1; i < nk; i++)
     {
-        double complex sum = 0;
         double len_sq = 0;
         for (int d = 0; d < nbr_of_dimensions; d++)
         {
             len_sq += qs(i,d)*qs(i,d);
         }
         len_sq = sqrt(len_sq);
-        for (int r=0; r < nbr_of_particles; r++)
+        if (len_sq> max)
+            max = len_sq;
+        s(i,0)=0;
+        s(i,1)=0;
+        for (int t = 1999; t <nbr_of_timesteps;t++ )
         {
-            double complex expo=0;
-            for (int d = 0; d < nbr_of_dimensions; d++)
+            double sum1 = 0;
+            double sum2 = 0;
+            for (int r=0; r < nbr_of_particles; r++)
             {
-                double ri = q[r][d];
-                ri=boundary_condition(ri,cell_length);
-                expo+= qs(i,d)*ri;
+                double expo=0;
+                for (int d = 0; d < nbr_of_dimensions; d++)
+                {
+                    double ri = qq(t,r,d);
+                    //ri=boundary_condition(ri,cell_length);
+                    expo+= qs(i,d)*ri;
+                }
+                sum1+= cos(expo);
+                sum2+= sin(expo);
             }
-            expo=expo*I;
-            sum+= cexp(expo);
+            sum1=sum1*sum1;
+            sum2=sum2*sum2;
+
+            s(i,0)+=sum1;
+            s(i,1)+=sum2;
         }
-        sum=conj(sum)*sum/nbr_of_particles;
-        s(i,0)=sum;
-        s(i,1) = len_sq;
+        s(i,0)/=1;
+        s(i,0)/=nbr_of_particles;
+        s(i,1)/=nbr_of_particles;
+        s(i,2) = len_sq;
     }
 
+    printf("%i\n", nk );
+
     file = fopen("sq.dat","w");
-    for (int i = 0; i < n_x*n_y*n_z; i ++) {
+    for (int i = 0; i < nk; i ++) {
         fprintf(file, "%e \t %e \n", s(i,0), s(i,1));
     }
     fclose(file);
+
+    printf("Data saved \n");
+
+    double min =0;
+    int k_bins = 100;
+    int* bins = malloc(k_bins*sizeof(int));
+    double* bins2 = malloc(k_bins*sizeof(double));
+    double d_r = min + (max-min)/k_bins;
+    for (int i = 1; i < nbr_of_timesteps; i++)
+    {
+        double dist = s(i,2);
+        double val = s(i,0);
+        int bin = get_bin(dist,min,max,d_r);
+        if (bin < k_bins)
+        {
+            bins[bin]++;
+            bins2[bin] +=val;
+        }
+    }
+
+    file = fopen("sq_bin.dat","w");
+    for (int i = 0; i < k_bins; i++ )
+    {
+        fprintf(file, "%e \t %i \t %e \n", d_r*(i-0.5),bins[i],bins2[i]);
+    }
 
 
     free(energy_kin);		energy_kin = NULL;
@@ -339,4 +390,12 @@ double boundary_condition(double u, double L)
     double f = u/L;
     f-= floor(f);
     return f*L;
+}
+
+double get_length(double* arr, int N)
+{
+    double len = 0;
+    for (int i = 0; i < N;  i++)
+        len += arr[i]*arr[i];
+    return sqrt(len);
 }
