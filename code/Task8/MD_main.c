@@ -253,9 +253,9 @@ int main()
         }
     } // equilibration/simulation
 
-    int n_x = 10;
-    int n_y = 10;
-    int n_z = 10;
+    int n_x = 30;
+    int n_y = 30;
+    int n_z = 30;
 
     double factor = PI*2.0/cell_length;
 
@@ -291,14 +291,13 @@ int main()
             for (int d = 0; d < nbr_of_dimensions; d++)
             {
                 double ri = q[r][d];
-                ri=boundary_condition(ri,cell_length); // TODO check if right
+                ri=boundary_condition(ri,cell_length);
                 expo+= qs(i,d)*ri;
             }
             expo=expo*I;
             sum+= cexp(expo);
         }
-        sum = cabs(sum);
-        sum=sum*sum/nbr_of_particles;
+        sum=conj(sum)*sum/nbr_of_particles;
         s(i,0)=sum;
         s(i,1) = len_sq;
     }
@@ -316,6 +315,8 @@ int main()
 	free(virial); 			virial = NULL;
 	free(temperature_avg); 	temperature_avg = NULL;
 	free(pressure_avg);		pressure_avg = NULL;
+    free(s_arr);            s_arr = NULL;
+    free(qs_arr);           qs_arr= NULL;
 
     return 0;
 }
@@ -335,9 +336,7 @@ int get_bin(double val , double min , double max , double  d_r)
 double boundary_condition(double u, double L)
 {
 
-    double f = fmod(u,L);
-    if (f < 0)
-        return -f;
-    else
-        return f;
+    double f = u/L;
+    f-= floor(f);
+    return f*L;
 }
