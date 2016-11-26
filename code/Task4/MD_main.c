@@ -8,12 +8,8 @@
 #include "alpotential.h"
 #define nbr_of_particles 256
 #define nbr_of_timesteps 1e4
-#define nbr_of_timesteps_eq 4000
+#define nbr_of_timesteps_eq 6000
 #define nbr_of_dimensions 3
-
-double boundary_condition(double,double);
-
-
 
 /* Main program */
 int main()
@@ -43,23 +39,23 @@ int main()
 
     /* Allocate memory for large vectors */
     /* Simulate 3 dimensional data by placing iniitalizeing a 1-dimensional array*/
-    #define qq(i,j,k) (disp_arr[nbr_of_particles*nbr_of_dimensions*i+nbr_of_dimensions*j+k])
-    double* disp_arr = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_dimensions*sizeof(double));
+    #define qq(i,j,k)         (disp_arr[nbr_of_particles*nbr_of_dimensions*i+nbr_of_dimensions*j+k])
+    double* disp_arr        = (double*)malloc(nbr_of_timesteps*nbr_of_particles*nbr_of_dimensions*sizeof(double));
 
-    double* energy 			= (double*) malloc(nbr_of_timesteps * sizeof(double));
+    double* energy_pot 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* energy_kin 		= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* virial 			= (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* temperature_avg = (double*) malloc(nbr_of_timesteps * sizeof(double));
     double* pressure_avg 	= (double*) malloc(nbr_of_timesteps * sizeof(double));
-    double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
-    double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq + nbr_of_timesteps) * sizeof(double));
+    double* temperature     = (double*) malloc((2 * nbr_of_timesteps_eq) * sizeof(double));
+    double* pressure        = (double*) malloc((2 * nbr_of_timesteps_eq) * sizeof(double));
 
     //TODO go over parameters again
     /* Initialize parameters*/
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.01; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.005; // 0.1 Bad, 0.01 Seems decent
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells
@@ -171,9 +167,6 @@ int main()
         }
     }
 
-    printf("Equilibration done.\n");
-    printf("Cell length: %.8f \n", cell_length);
-
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
             qq(0,i,j)=q[i][j];
@@ -181,7 +174,7 @@ int main()
     }
 
     // Compute energies, temperature etc. at equilibrium
-    energy[0] = get_energy_AL(q, cell_length, nbr_of_particles);
+    energy_pot[0] = get_energy_AL(q, cell_length, nbr_of_particles);
     virial[0] = get_virial_AL(q, cell_length, nbr_of_particles);
     energy_kin[0] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
     temperature_avg[0] = instantaneous_temperature(energy_kin[0], nbr_of_particles);
@@ -218,7 +211,7 @@ int main()
 
         /* Calculate energy */
         // Potential energy
-        energy[i] = get_energy_AL(q, cell_length, nbr_of_particles);
+        energy_pot[i] = get_energy_AL(q, cell_length, nbr_of_particles);
         // Kinetic energy
         energy_kin[i] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
 
@@ -226,16 +219,9 @@ int main()
 
 		// Temperature
         temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles, i);
-        temperature[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_temperature(energy_kin[i],
-            nbr_of_particles);
-
 
         // Pressure
         pressure_avg[i] = averaged_pressure(virial, energy_kin, volume, i);
-        pressure[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_pressure(virial[i],
-            temperature[2*(nbr_of_timesteps_eq-1) + i],
-            nbr_of_particles, volume);
-
 
         /* Save current displacements to array*/
         for (int j = 0; j < nbr_of_particles; j++){
@@ -262,50 +248,27 @@ int main()
     }
     fclose(file);
 
-    /* Save energies to file */
-    file = fopen("energy.dat","w");
-
-    for (int i = 0; i < nbr_of_timesteps; i ++) {
-        current_time = i*timestep;
-        fprintf(file, "%.4f \t", current_time);
-        fprintf(file, "%.4f \t", energy[i]);
-        fprintf(file, "%.4f \n", energy_kin[i]);
-    }
-    fclose(file);
-
     // Save temperature to file
     file = fopen("temperature.dat", "w");
-    for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++) {
+    for (int i = 0; i < 2*nbr_of_timesteps_eq; i++) {
     	current_time = i*timestep;
     	fprintf(file, "%.3f \t %e\n", current_time, temperature[i]);
     }
     fclose(file);
 
-    file = fopen("temperature_avg.dat", "w");
-    for (int i = 0; i < nbr_of_timesteps; i++) {
-        current_time = i*timestep;
-        fprintf(file, "%.3f \t %e\n", current_time, temperature_avg[i]);
-    }
-    fclose(file);
-
     // Save pressure to file
     file = fopen("pressure.dat", "w");
-    for (int i = 0; i < 2*nbr_of_timesteps_eq+nbr_of_timesteps; i++) {
+    for (int i = 0; i < 2*nbr_of_timesteps_eq; i++) {
     	current_time = i*timestep;
     	fprintf(file, "%.3f \t%e \n", current_time, pressure[i]);
     }
     fclose(file);
 
-    file = fopen("pressure_avg.dat", "w");
-    for (int i = 0; i < nbr_of_timesteps; i++) {
-        current_time = i*timestep;
-        fprintf(file, "%.3f \t %e\n", current_time, pressure_avg[i]);
-    }
-    fclose(file);
-
+    printf("Final Temperature: %e\n", temperature_avg[nbr_of_timesteps] );
+    printf("Final Pressure: %e\n", pressure_avg[nbr_of_timesteps] );
 
     free(energy_kin);		energy_kin = NULL;
-    free(energy); 			energy = NULL;
+    free(energy_pot); 		energy_pot = NULL;
     free(disp_arr); 		disp_arr = NULL;
 	free(virial); 			virial = NULL;
 	free(temperature_avg); 	temperature_avg = NULL;

@@ -36,12 +36,12 @@ view(45, 45);
 
 % labels
 xlabel('Position / [\AA]','interpreter','latex');
-ylabel('Position / [\AA]','interpreter','latex')
+ylabel('Position / [\AA]','interpreter','latex');
 zlabel('Position / [\AA]','interpreter','latex');
 % legend
-legend({'Atom 1','Atom 2','Atom 3'},'interpreter','latex')
+legend({'Atom 1','Atom 2','Atom 3'},'interpreter','latex');
 
-title('Movement of atoms in liquid','interpreter','latex')
+title('Movement of atoms in solid','interpreter','latex')
 
 % axis limits
 
