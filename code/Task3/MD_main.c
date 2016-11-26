@@ -264,8 +264,8 @@ int main()
     }
     fclose(file);
 
-    printf("Final Temperature: %e\n", temperature_avg[nbr_of_timesteps] );
-    printf("Final Pressure: %e\n", pressure_avg[nbr_of_timesteps] );
+    printf("Final Temperature: %e\n", temperature_avg[nbr_of_timesteps]);
+    printf("Final Pressure: %e\n", pressure_avg[nbr_of_timesteps]);
 
     free(energy_kin);		energy_kin = NULL;
     free(energy_pot); 		energy_pot = NULL;
