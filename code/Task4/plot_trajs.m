@@ -12,7 +12,7 @@ figure;
 steplength = 10;
 L = size(data);
 
-traj=randi([1, (L(2)-1)/3], 3, 1);
+traj=[12;25;211];
 traj_dat=zeros(3, L(1), 3);
 for t=1:steplength:L(1)
     for i = 1:3
@@ -32,15 +32,16 @@ end
 hold off
 %axis([0 17 0 17 0 17])
 
-% labels
-%xlabel('Time / [dim. unit]');
-%ylabel('Displacement / [dim. unit]');
+view(45, 45);
 
 % labels
-xlabel('Position / [Å]');
-ylabel('Position / [Å]');
-zlabel('Position / [Å]');
+xlabel('Position / [\AA]','interpreter','latex');
+ylabel('Position / [\AA]','interpreter','latex')
+zlabel('Position / [\AA]','interpreter','latex');
 % legend
-legend('Atom 1','Atom 2','Atom 3');
+legend({'Atom 1','Atom 2','Atom 3'},'interpreter','latex')
 
-title('Movement of atoms in solid')
+title('Movement of atoms in liquid','interpreter','latex')
+
+% axis limits
+

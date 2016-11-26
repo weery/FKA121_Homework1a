@@ -14,13 +14,14 @@ for i = 2:8
     plot(data(:,1),data(:,3));
 end
 
-text(2,5000000,'\downarrow 0.01')
-text(1,5000000,'\downarrow 0.02')
+
 text(5.2,28000000,'0.03 \uparrow')
 
-text(3,5000000,'\downarrow 0.005')
-text(4,5000000,'\downarrow 0.015')
-text(8,5000000,'0.025 \downarrow')
+text(1,5000000,'\downarrow 0.005')
+text(2.5,5000000,'\downarrow 0.01')
+text(3.8,5000000,'\downarrow 0.015')
+text(5,5000000,'\downarrow 0.02')
+text(6.5,5000000,'\downarrow 0.025')
 
 text(3,32000000,'0.035 \downarrow')
 text(4,40000000,'0.04 \downarrow')

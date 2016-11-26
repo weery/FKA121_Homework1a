@@ -1,14 +1,22 @@
-% Plot pressure
+% Plot the average temperature
 close % close previous figure
+clear all
 
-data = importdata('pressure_avg.dat');
+data = importdata('pressure.dat');
 
 % plot
 figure;
-plot(data(4:end,1), data(4:end,2), '-');
+plot(data(1:8000,1), data(1:8000,2), '-')
 
+hold on
+target_temperature = 101325e-11/1.602;
+plot(data(1:8000,1),target_temperature*ones(1,8000),'--')
+
+% legend
+legend({'Instantanous pressure','Target pressure'},'interpreter','latex','location','northeast')
+% 
 % labels
-xlabel('Time / [ps]')
-ylabel('Pressure / [eV/A]')
+xlabel('Time / [ps]','interpreter','latex')
+ylabel('Pressure / [eV/\AA]','interpreter','latex')
 % title
-title('Pressure average')
+title('Pressure equilibration','interpreter','latex')
