@@ -110,27 +110,28 @@ After equilibration to 700$^\circ$ C and 1 atm the average temperature obtained 
 \noindent One interesting thermal property of a material is the heat capacity. We can calculate it from fluctuations in either the kinetic or the potential energies, as
 \begin{equation}
 C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{kin}\right)^2  \right\rangle_{NVE} \right]^{-1} \text{or}
+\label{eq:prob5-1}
 \end{equation}
 
 \begin{equation}
 C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{pot}\right)^2  \right\rangle_{NVE} \right]^{-1}.
+\label{eq:prob5-2}
 \end{equation}
 
 From our MD simulations we obtained the values found in {Table \ref{tab:prob5}} for $C_V$ when using the potential and kinetic energy fluctuations respectively. The same method and parameters as in problem 3 and 4 were used.
 
-\begin{table}[h!]
+\begin{table}[H]
 	\centering
 	\caption{Heat capacity obtained by measuring energy fluctuations in Problem 5.}
 	\begin{tabular}{l|cc}
 		\hline \textbf{Temperature} & \textbf{500$^\circ$ C} & \textbf{700$^\circ$ C} \\ \hline
-		$C_V / (\unit{eV/kg\,K})$ (kinetic) & $ 6.2949 \cdot 10^{-2}$ & $ 8.2569 \cdot 10^{-2}$ \\
-		$C_V / (\unit{eV/kg\,K})$ (potential) & $ 6.4307 \cdot 10^{-2}$ & $ 8.4425 \cdot 10^{-2}$ \\ \hline
+		$C_V / (\unit{eV/K})$ (kinetic) & $ 6.2949 \cdot 10^{-2}$ & $ 8.2569 \cdot 10^{-2}$ \\
+		$C_V / (\unit{eV/K})$ (potential) & $ 6.4307 \cdot 10^{-2}$ & $ 8.4425 \cdot 10^{-2}$ \\ \hline
 	\end{tabular}
 	\label{tab:prob5}
 \end{table}
 
-From experiments the heat capacity for aluminium in a solid is found to be $\unit[0.900]{J/g^\circ C}$ \cite{al_heat_solid} and for the liquid $\unit[1.18]{J/g^\circ C}$ \cite{al_heat_liquid}. The ratio of these are $1.18/0.9=1.3111$ which is almost the same ratio we found from our simulations,
-$8.2569/6.2949=1.3117$.
+From experiments the heat capacity for aluminium in a solid is found to be $\unit[0.900]{J/g K}$ \cite{al_heat_solid} and for the liquid $\unit[1.18]{J/g K}$ \cite{al_heat_liquid}. For the chunk of 256 Al atoms in this simulation, this correspond to approx. $\unit[0.064429]{eV/K}$ and $\unit[0.084473]{eV/K}$. Looking at Table \ref{tab:prob5} above we see that this aligns very well to the values obtained through Eq. \eqref{eq:prob5-1} and \eqref{eq:prob5-2} in the simulation. However, we also notice that using the potential energy fluctuations have given more accurate results. We are not sure why this seems to be the case, but we have also noted that results can fluctuate a lot between runs which might be an explanation.
 
 
 
@@ -140,19 +141,19 @@ It is also possible to compute the heat capacity from the relation
 \begin{equation}
 	C_V = \left( \frac{\partial E}{\partial T} \right)_{N,V}
 \end{equation}
-and approximate it with a difference quota. To do this we first equilibrate the system temperature and pressure to the target values, i.e. 500$^\circ$ C or 700$^\circ$ C for the temperature and 1 atm for the pressure. Once this is done we equilibrate only the temperature to the target with a small difference $\Delta T$. After this second equilibration the system is simulated for some time and averages of the temperature and energy are computed. This is repeated for the same but negative $Delta T$. Approximating the derivative with the difference quotient we obtain the results found in the table below. The parameter $Delta T$ was chosen to be 5$^\circ$ C.
+and approximate it with a difference quota. To do this we first equilibrate the system temperature and pressure to the target values, i.e. 500$^\circ$ C or 700$^\circ$ C for the temperature and 1 atm for the pressure. Once this is done we equilibrate only the temperature to the target with a small difference $\Delta T$. After this second equilibration the system is simulated for some time and averages of the temperature and energy are computed. This is repeated for the same but negative $\Delta T$. Approximating the derivative with the difference quotient we obtain the results found in the table below. The parameter $\Delta T$ was chosen to be 5$^\circ$ C.
 
 \begin{table}[h!]
 	\centering	
 	\caption{Heat capacity obtained by approximating the partial energy derivative with respect to the temperature.}
 	\begin{tabular}{l|cc}
 		\hline \textbf{Temperature} & \textbf{500$^\circ$ C} & \textbf{700$^\circ$ C} \\ \hline
-		$C_V / (\unit{eV/kg\,K})$ & $6.436 \cdot 10^{-2}$ & $8.131 \cdot 10^{-2}$ \\ \hline
+		$C_V / (\unit{eV/K})$ & $6.436 \cdot 10^{-2}$ & $8.5400 \cdot 10^{-2}$ \\ \hline
 	\end{tabular}
 	\label{tab:prob6}
 \end{table}
 
-If we compare these results to those from the previous problem we see that they are slightly larger and the result for 700 degrees deviates by a larger margin. It's possible that a longer equilibration time would yield a more stable temperature than was obtained now and therefore a more accurate heat capacity. A longer measuring time would also increase the accuracy of the result, as well as doing more simulations and averaging the different results. A $\Delta T$ of 5$^\circ$ C was used here, but further experiementing with this parameter could yield a better result as well.
+If we compare the result to the ones obtained in experiments and those obtained in the previous problem, we see that they are similar and that this method also seems to give good results.
 
 \section*{Problem 7}
 
@@ -171,8 +172,7 @@ The radial distribution function obtained can be found in figure~\ref{fig:radial
 
 Normally the radial distribution would converge to unity as the radius tends to infinity as over large distances the atoms are almost randomly distributed, this is not something we can see in out figure and is not expected. This is due to that our system is limited in size and we therefore can't find any particles for all distances as we have already counted that particle in the opposite direction.
 
-With Matlab we find that the first local minimum is localized at $r_m = 3.7797$, giving us the coordination number $I(r_m) \approx 12.2279
-$. The expected coordination number for an fcc structure is 12 \cite{al_coordination_nbr}, but our result is slightly higher. This is expected since the system is melted and the particles move around more freely. If the system was solid we would expect a result closer to 12.
+With Matlab we find that the first local minimum is localized at $r_m = 3.7797$, giving us the coordination number $I(r_m) \approx 12.928$. The expected coordination number for an fcc structure is 12 \cite{al_coordination_nbr}, but our result is slightly higher. This is expected since the system is melted and the particles move around more freely. If the system was solid we would expect a result closer to 12.
 
 \section*{Problem 8}
 
