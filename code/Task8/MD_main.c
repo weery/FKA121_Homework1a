@@ -12,8 +12,8 @@
 #include "alpotential.h"
 #include <complex.h>
 #define nbr_of_particles 256
-#define nbr_of_timesteps 2000
-#define nbr_of_timesteps_eq 4000
+#define nbr_of_timesteps 1e4
+#define nbr_of_timesteps_eq 6000
 #define nbr_of_dimensions 3
 
 #define PI 3.141592653589
@@ -37,7 +37,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 1500.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
 
 
@@ -250,9 +250,9 @@ int main()
         }
     } // equilibration/simulation
 
-    int n_x = 3;
-    int n_y = 3;
-    int n_z = 3;
+    int n_x = 40;
+    int n_y = 40;
+    int n_z = 40;
 
     double factor = PI*2.0/cell_length;
 
@@ -260,16 +260,10 @@ int main()
     double* qs_arr = (double*)malloc((2*n_x+1)*(2*n_y+1)*(2*n_z+1)*(nbr_of_dimensions)*sizeof(double));
 
     int nk = 0;
-    /*
-    for (int i = -n_x; i < n_x; i++)
-        for (int j = -n_y; j< n_y; j++)
-            for (int k = -n_z; k < n_z ; k++)
-            {
-                */
 
-    for (int i = -n_x; i < n_x; i++)
-        for (int j = -n_y; j< n_y; j++)
-            for (int k = -n_z; k < n_z ; k++)
+    for (int i = -n_x; i <= n_x; i++)
+        for (int j = -n_y; j<= n_y; j++)
+            for (int k = -n_z; k <= n_z ; k++)
             {
                 qs(nk,0)=i*factor;
                 qs(nk,1)=j*factor;
@@ -278,9 +272,8 @@ int main()
             }
 
     #define s(i,q) (s_arr[3*i+q])
-    double* s_arr = (double*)malloc((2*n_x+1)*(2*n_y+1)*(2*n_z+1)*(3)*sizeof(double));
+    double* s_arr = (double*)malloc(nk*(3)*sizeof(double));
 
-    printf("%i\n", nk );
 
 
     double max =0;
@@ -337,24 +330,21 @@ int main()
     double min =0;
     int k_bins = 100;
     int* bins = malloc(k_bins*sizeof(int));
-    double* bins2 = malloc(k_bins*sizeof(double));
     double d_r = min + (max-min)/k_bins;
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
         double dist = s(i,2);
-        double val = s(i,0);
         int bin = get_bin(dist,min,max,d_r);
         if (bin < k_bins)
         {
             bins[bin]++;
-            bins2[bin] +=val;
         }
     }
 
     file = fopen("sq_bin.dat","w");
     for (int i = 0; i < k_bins; i++ )
     {
-        fprintf(file, "%e \t %i \t %e \n", d_r*(i-0.5),bins[i],bins2[i]);
+        fprintf(file, "%e \t %i \n", d_r*(i-0.5),bins[i]);
     }
 
 

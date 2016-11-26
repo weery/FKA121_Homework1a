@@ -11,8 +11,8 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 1000
-#define nbr_of_timesteps_eq 4000
+#define nbr_of_timesteps 1e4
+#define nbr_of_timesteps_eq 6000
 #define nbr_of_dimensions 3
 
 #define PI 3.141592653589
@@ -37,7 +37,6 @@ int main()
     double timestep;
     double temperature_eq[] = { 1500.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
-    double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
     FILE *file;
 
@@ -68,7 +67,7 @@ int main()
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.01; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.005; // 0.1 Bad, 0.01 Seems decent
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells
@@ -158,7 +157,7 @@ int main()
 
             // Update alhpas
             alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+            alpha_P = 1.0 - 0.01*(pressure_eq - inst_pressure_eq);
 
 
             // Scale velocities
@@ -192,12 +191,10 @@ int main()
     //double max = sqrt(3.0*cell_length*cell_length/2.0);
     double max = cell_length;
     double d_r = (max-min)/(1.0*k_bins);
-    int bins[k_bins];
-    int* bins2 = (int*) malloc(k_bins * sizeof(int));
+    int* bins = (int*) malloc(k_bins * sizeof(int));
 
     for (int i = 0; i < k_bins; i++) {
         bins[i]=0;
-        bins2[i]=0;
     }
 
     for (int i = 1; i < nbr_of_timesteps; i++)
@@ -262,7 +259,7 @@ int main()
                 int bin = get_bin(dist,min,max,d_r);
                 if (bin < k_bins)
                 {
-                    bins2[bin] += 2;
+                    bins[bin] += 2;
                     n_part+=2;
                 }
                 else
@@ -283,7 +280,7 @@ int main()
     /* Save data to file*/
     file = fopen("histogram.dat","w");
     for (int i = 0; i < k_bins; i ++) {
-        fprintf(file, "%e \t %i \t %i \t %e \n",d_r*(i-0.5), bins[i],bins2[i], Nideal[i]);
+        fprintf(file, "%e \t %i \t %e \n",d_r*(i-0.5),bins2[i], Nideal[i]);
     }
     fclose(file);
     // TO THIS ISH TODO

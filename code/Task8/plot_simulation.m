@@ -2,13 +2,13 @@
 
 clear all
 
-data = importdata('data.dat');
-data2= importdata('data2.dat');
+data = importdata('sq.dat');
+data2= importdata('sq_bin.dat');
 
 
 % plot
 figure;
-startx = 2;
+startx = 1;
 plot(data(startx:end,1),data(startx:end,2),'-')
 
 

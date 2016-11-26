@@ -5,7 +5,7 @@ data = importdata('histogram.dat');
 % plot
 figure;
 % Rätt faktor antal tidssteg och antal atomer
-g=data(:,3)./data(:,4)/1000/256;
+g=data(:,3)./data(:,4)/10000/256;
 
 plot(data(:,1),g)
 

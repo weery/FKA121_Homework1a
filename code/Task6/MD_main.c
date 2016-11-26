@@ -68,7 +68,7 @@ int main()
                                     			// structured in a block of 4x4x4 unit cells
     volume 					= pow(cell_length, 3);
 
-    
+
 
     /* Put atoms on lattice */
     init_fcc(q, 4, lattice_param);
@@ -140,11 +140,9 @@ int main()
 
             virial_eq = get_virial_AL(q, cell_length, nbr_of_particles);
 
-
             inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
             inst_pressure_eq = instantaneous_pressure(virial_eq, inst_temperature_eq,
                 nbr_of_particles, volume);
-
 
             // Update alphas
             alpha_T = 1.0 + 0.01*(target_temp-inst_temperature_eq)/inst_temperature_eq;
@@ -177,8 +175,6 @@ int main()
 
         double target_temp = temperature_eq[1] + delta_temperature[d];
         for (int i = 0; i < nbr_of_timesteps_eq; i++) {
-
-
             /** Verlet algorithm **/
             /* Half step for velocity */
             for (int j = 0; j < nbr_of_particles; j++) {
@@ -186,7 +182,6 @@ int main()
                     v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
                 }
             }
-
             /* Update displacement*/
             for (int j = 0; j < nbr_of_particles; j++) {
                 for (int k = 0; k < nbr_of_dimensions; k++) {
@@ -232,7 +227,7 @@ int main()
         // period
         // ***************************************************
         for (int i = 0; i < nbr_of_throwaway_timesteps; i++) {
-            
+
             /** Verlet algorithm **/
             /* Half step for velocity */
             for (int j = 0; j < nbr_of_particles; j++){
@@ -304,12 +299,10 @@ int main()
             energy_pot[i] = get_energy_AL(q, cell_length, nbr_of_particles);
             // Kinetic energy
             energy_kin[i] = get_kinetic_AL(v, nbr_of_dimensions, nbr_of_particles, m_AL);
-
-            
         } // equilibration/simulation
 
         // Compute heat capacity
-        temperature_avg[d] = averaged_temperature(energy_kin, nbr_of_particles, nbr_of_timesteps-1);
+        temperature_avg[d] = averaged_temperature(energy_kin, nbr_of_particles, nbr_of_timesteps);
         // Compute average total energy
         for (int i = 0; i < nbr_of_timesteps; i++)
             energy_avg[d] += energy_pot[i] + energy_kin[i];
@@ -336,4 +329,3 @@ int main()
 
     return 0;
 }
-
