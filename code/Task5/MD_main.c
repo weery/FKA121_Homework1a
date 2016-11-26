@@ -62,7 +62,7 @@ int main()
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.005; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.005;
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells

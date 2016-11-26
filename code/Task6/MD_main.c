@@ -13,6 +13,7 @@
 #define nbr_of_particles 256
 #define nbr_of_timesteps 1e4
 #define nbr_of_timesteps_eq 6000
+#define nbr_of_throwaway_timesteps 1000
 #define nbr_of_dimensions 3
 
 double boundary_condition(double,double);
@@ -34,7 +35,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 500.0+273.15, 500.0+273.15 };
     double delta_temperature[] = { -5.0, 5.0 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
 
@@ -224,6 +225,40 @@ int main()
 
 
         }
+
+        // ***************************************************
+        // Simulate the system for a while without measuring
+        // the temperature to throw away the unstable initial
+        // period
+        // ***************************************************
+        for (int i = 0; i < nbr_of_throwaway_timesteps; i++) {
+            
+            /** Verlet algorithm **/
+            /* Half step for velocity */
+            for (int j = 0; j < nbr_of_particles; j++){
+                for (int k = 0; k < nbr_of_dimensions; k++){
+                    v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+                }
+            }
+
+            /* Update displacement*/
+            for (int j = 0; j < nbr_of_particles; j++){
+                for (int k = 0; k < nbr_of_dimensions; k++){
+                    q[j][k] += timestep * v[j][k];
+                }
+            }
+
+            /* Update Forces */
+            get_forces_AL(f, q, cell_length, nbr_of_particles);
+
+            /* Final velocity*/
+            for (int j = 0; j < nbr_of_particles; j++){
+                for (int k = 0; k < nbr_of_dimensions; k++){
+                    v[j][k] += timestep * 0.5 * f[j][k]/m_AL;
+                }
+            }
+        }
+
 
         // ****************************************************
         // Simulate the system at this temperature and measure
