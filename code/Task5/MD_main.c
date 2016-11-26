@@ -15,10 +15,6 @@
 #define nbr_of_timesteps_eq 6000
 #define nbr_of_dimensions 3
 
-double boundary_condition(double,double);
-
-
-
 /* Main program */
 int main()
 {
@@ -34,7 +30,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 500.0+273.15, 500.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
     //double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
@@ -110,9 +106,6 @@ int main()
     double energy_kin_eq = get_kinetic_AL(v,nbr_of_dimensions,nbr_of_particles,m_AL);
     double virial_eq = get_virial_AL(q,cell_length,nbr_of_particles);
 
-    //temperature[0]  = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
-    //pressure[0]     = instantaneous_pressure(virial_eq, temperature[0], nbr_of_particles, volume);
-
     for (int equil = 0; equil < 2; equil++) {
         for (int i = 1; i < nbr_of_timesteps_eq; i++)
         {
@@ -149,10 +142,9 @@ int main()
 
 
             inst_temperature_eq = instantaneous_temperature(energy_kin_eq, nbr_of_particles);
-            //temperature[equil*(nbr_of_timesteps_eq-1) + i] = inst_temperature_eq;
             inst_pressure_eq = instantaneous_pressure(virial_eq, inst_temperature_eq,
                 nbr_of_particles, volume);
-            //pressure[equil*(nbr_of_timesteps_eq-1) + i] = inst_pressure_eq;
+
 
 
             // Update alhpas
@@ -178,9 +170,6 @@ int main()
 
         }
     }
-
-    printf("Equilibration done.\n");
-    printf("Cell length: %.8f \n", cell_length);
 
     for (int i = 0; i < nbr_of_particles; i++){
         for (int j = 0; j < nbr_of_dimensions; j++){
@@ -236,16 +225,9 @@ int main()
 
 		// Temperature
         temperature_avg[i] = averaged_temperature(energy_kin, nbr_of_particles, i);
-        /*temperature[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_temperature(energy_kin[i],
-            nbr_of_particles);*/
-
 
         // Pressure
         pressure_avg[i] = averaged_pressure(virial, energy_kin, volume, i);
-        /*pressure[2*(nbr_of_timesteps_eq-1) + i] = instantaneous_pressure(virial[i],
-            temperature[2*(nbr_of_timesteps_eq-1) + i],
-            nbr_of_particles, volume);*/
-
 
         /* Save current displacements to array*/
         for (int j = 0; j < nbr_of_particles; j++){
@@ -253,21 +235,21 @@ int main()
                 qq(i,j,k)=q[j][k];
             }
         }
-        
+
     } // equilibration/simulation
-
+    
     // Compute heat capacity
-    heat_capacity_kin = calculate_heat_capacity_kin(energy_kin, temperature_eq[1],
-        nbr_of_particles, nbr_of_timesteps);
-    heat_capacity_pot = calculate_heat_capacity_pot(energy_pot, temperature_eq[1],
-        nbr_of_particles, nbr_of_timesteps);
+    heat_capacity_kin = calculate_heat_capacity_kin(energy_kin+1000, temperature_avg[(int)nbr_of_timesteps-1],
+        nbr_of_particles, nbr_of_timesteps-1000);
+    heat_capacity_pot = calculate_heat_capacity_pot(energy_pot+1000, temperature_avg[(int)nbr_of_timesteps-1],
+        nbr_of_particles, nbr_of_timesteps-1000);
 
-    printf("Temp: %f\nHeat capacity: %.10f \t %.10f\n", temperature_eq[1],
+    printf("Temp: %.2f\nHeat capacity: %.10f \t %.10f\n", temperature_avg[(int)nbr_of_timesteps-1],
     	heat_capacity_kin, heat_capacity_pot);
 
     // Save results to file
     file = fopen("heat_capacity.dat", "w");
-    fprintf(file, "%.2f\t%e\t%e\n", temperature_eq[1],
+    fprintf(file, "%.2f\t%e\t%e\n", temperature_avg[(int)nbr_of_timesteps],
     	heat_capacity_kin, heat_capacity_pot);
     fclose(file);
 
@@ -284,4 +266,3 @@ int main()
 
     return 0;
 }
-
