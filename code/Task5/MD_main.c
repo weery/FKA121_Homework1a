@@ -12,7 +12,7 @@
 #include "alpotential.h"
 #define nbr_of_particles 256
 #define nbr_of_timesteps 1e4
-#define nbr_of_timesteps_eq 4000
+#define nbr_of_timesteps_eq 6000
 #define nbr_of_dimensions 3
 
 double boundary_condition(double,double);
@@ -36,7 +36,7 @@ int main()
     double timestep;
     double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
-    double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
+    //double isothermal_compressibility = 1.0; //0.8645443196; // 1.385e-11 m^2/N = 1.385/1.602 Å^3/eV
 
     FILE *file;
 
@@ -66,7 +66,7 @@ int main()
     initial_displacement 	= 0.05;
     lattice_param 			= 4.046; // For aluminium (Å)
     lattice_spacing 		= lattice_param/sqrt(2.0);
-    timestep 				= 0.001; // 0.1 Bad, 0.01 Seems decent
+    timestep 				= 0.005; // 0.1 Bad, 0.01 Seems decent
     m_AL 					= 0.0027964; // In ASU
     cell_length 			= 4*lattice_param;  // Side of the supercell: The 256 atoms are
                                     			// structured in a block of 4x4x4 unit cells
@@ -99,8 +99,9 @@ int main()
 
     get_forces_AL(f, q, cell_length, nbr_of_particles);
 
-    /* Simulation */
-    /* Equilibrium stage */
+    /********************************
+     * Simulation with equilibration
+     ********************************/
 
     double inst_temperature_eq;
     double inst_pressure_eq;
@@ -156,10 +157,8 @@ int main()
 
             // Update alhpas
             alpha_T = 1.0 + 0.01*(temperature_eq[equil]-inst_temperature_eq)/inst_temperature_eq;
-            alpha_P = 1.0 - 0.01*isothermal_compressibility*(pressure_eq - inst_pressure_eq);
+            alpha_P = 1.0 - 0.01*(pressure_eq - inst_pressure_eq);
 
-            // DEBUG:alpha
-            //printf("%.8f \t %.8f \n", alpha_T, alpha_P);
 
             // Scale velocities
             for (int j = 0; j < nbr_of_particles; j++){
@@ -197,7 +196,9 @@ int main()
     pressure_avg[0] = instantaneous_pressure(virial[0], temperature_avg[0],
     	nbr_of_particles, volume);
 
-    /* Simulation after equilibrium*/
+    /*********************************
+     * Simulation after equilibrium
+     *********************************/
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
         /** Verlet algorithm **/
