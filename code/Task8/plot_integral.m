@@ -9,26 +9,24 @@ g=data(:,3)./data(:,4)/10000/n;
 
 %plot(data(:,1),g)
 
+% about half the cell length
 nDats=125;
-
 
 rad=data(1:nDats,1);
 
 integr=@(q)sum(rad.^2.*(g(1:nDats)-1).*sin(q*rad)./(rad*q));
-%)/((data(nDats,1)-data(1,1))*nDats);
 
 s=@(q)1+4*pi*1/n*integr(q);
 
-
-c=linspace(0,25,5000);
+q=linspace(0,25,5000);
 
 for i=1:5000
-    b(i)=s(c(i));
+    val(i)=s(q(i));
 end
-plot(c,b)
+plot(q,val)
 
-xlim([c(1), c(end)])
+xlim([q(1), q(end)])
 
-title('Static structure factor')
-xlabel('q')
-ylabel('S(q)')
+title('Integrated static structure factor','interpreter','latex')
+xlabel('$q$','interpreter','latex')
+ylabel('$s(q)$','interpreter','latex')

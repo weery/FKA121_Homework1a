@@ -305,13 +305,12 @@ int main()
                 sum1+= cos(expo);
                 sum2+= sin(expo);
             }
-            sum1=sum1*sum1;
-            sum2=sum2*sum2;
+            sum1=abs(sum1*sum1);
+            sum2=abs(sum2*sum2);
 
             s(i,0)+=sum1;
             s(i,1)+=sum2;
         }
-        s(i,0)/=1;
         s(i,0)/=nbr_of_particles;
         s(i,1)/=nbr_of_particles;
         s(i,2) = len_sq;
@@ -321,7 +320,7 @@ int main()
 
     file = fopen("sq.dat","w");
     for (int i = 0; i < nk; i ++) {
-        fprintf(file, "%e \t %e \n", s(i,0), s(i,1));
+        fprintf(file, "%e \t %e \t %e \n", s(i,0), s(i,1),s(i,2));
     }
     fclose(file);
 
@@ -329,7 +328,7 @@ int main()
 
     double min =0;
     int k_bins = 100;
-    int* bins = malloc(k_bins*sizeof(int));
+    double* bins = malloc(k_bins*sizeof(double));
     double d_r = min + (max-min)/k_bins;
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
@@ -337,7 +336,8 @@ int main()
         int bin = get_bin(dist,min,max,d_r);
         if (bin < k_bins)
         {
-            bins[bin]++;
+            //bins[bin]++;
+            bins[bin]+= s(i,1)+s(i,0);
         }
     }
 

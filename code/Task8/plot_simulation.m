@@ -12,6 +12,6 @@ startx = 1;
 plot(data(startx:end,1),data(startx:end,2),'-')
 
 
-title('Simulated Static structure factor')
-xlabel('q')
-ylabel('S(q)')
+title('Simulated Static structure factor','interpreter','latex')
+xlabel('q','interpreter','latex')
+ylabel('S(q)','interpreter','latex')
