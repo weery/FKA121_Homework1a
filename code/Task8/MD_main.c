@@ -277,8 +277,9 @@ int main()
 
 
     double max =0;
-    for (int i = 1; i < nk; i++)
+    for (int i = 0; i < nk; i++)
     {
+        printf("Current nk: %i out of: %i\n", i, nk );
         double len_sq = 0;
         for (int d = 0; d < nbr_of_dimensions; d++)
         {
@@ -286,10 +287,13 @@ int main()
         }
         len_sq = sqrt(len_sq);
         if (len_sq> max)
+        {
             max = len_sq;
+            printf("Current max: %e\n",max );
+        }
         s(i,0)=0;
         s(i,1)=0;
-        for (int t = 1999; t <nbr_of_timesteps;t++ )
+        for (int t = 9000; t <nbr_of_timesteps;t++ )
         {
             double sum1 = 0;
             double sum2 = 0;
@@ -313,10 +317,11 @@ int main()
         }
         s(i,0)/=nbr_of_particles;
         s(i,1)/=nbr_of_particles;
+        s(i,0)/=1000;
+        s(i,1)/=1000;
         s(i,2) = len_sq;
     }
 
-    printf("%i\n", nk );
 
     file = fopen("sq.dat","w");
     for (int i = 0; i < nk; i ++) {
@@ -328,7 +333,8 @@ int main()
 
     double min =0;
     int k_bins = 100;
-    double* bins = malloc(k_bins*sizeof(double));
+    //int* bins = (double*)malloc(k_bins*sizeof(double));
+    double* bins = (double*)malloc(k_bins*sizeof(double));
     double d_r = min + (max-min)/k_bins;
     for (int i = 1; i < nbr_of_timesteps; i++)
     {
@@ -344,7 +350,7 @@ int main()
     file = fopen("sq_bin.dat","w");
     for (int i = 0; i < k_bins; i++ )
     {
-        fprintf(file, "%e \t %i \n", d_r*(i-0.5),bins[i]);
+        fprintf(file, "%e \t %e \n", d_r*(i-0.5),bins[i]);
     }
 
 
@@ -374,7 +380,6 @@ int get_bin(double val , double min , double max , double  d_r)
 
 double boundary_condition(double u, double L)
 {
-
     double f = u/L;
     f-= floor(f);
     return f*L;
