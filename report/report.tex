@@ -125,10 +125,10 @@ After equilibration to 700$^\circ$ C and 1 atm the average temperature obtained 
 
 \noindent One interesting thermal property of a material is the heat capacity. We can calculate it from fluctuations in either the kinetic or the potential energies, as
 \begin{equation}
-C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{kin}\right)^2  \right\rangle_{NVE} \right]^{-1} \text{or}
+C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{kin}\right)^2  \right\rangle_{NVE} \right]^{-1}
 \label{eq:prob5-1}
 \end{equation}
-
+or
 \begin{equation}
 C_v=\frac{3Nk_B}{2}\left[1-\frac{2}{3Nk_b^2T^2}\left\langle \left(\delta \epsilon_{pot}\right)^2  \right\rangle_{NVE} \right]^{-1}.
 \label{eq:prob5-2}
@@ -147,7 +147,7 @@ From our MD simulations we obtained the values found in {Table \ref{tab:prob5}} 
 	\label{tab:prob5}
 \end{table}
 
-From experiments the heat capacity for aluminium in a solid is found to be $\unit[0.900]{J/g K}$ \cite{al_heat_solid} and for the liquid $\unit[1.18]{J/g K}$ \cite{al_heat_liquid}. For the chunk of 256 Al atoms in this simulation, this correspond to approx. $\unit[0.0644]{eV/K}$ and $\unit[0.0844]{eV/K}$. Looking at Table \ref{tab:prob5} above we see that this aligns very well to the values obtained through Eq. \eqref{eq:prob5-1} and \eqref{eq:prob5-2} in the simulation. However, we also notice that using the potential energy fluctuations have given more accurate results. We are not sure why this seems to be the case, but we have also noted that results can fluctuate some between runs which might be an explanation.
+From experiments the heat capacity for aluminium in a solid is found to be $\unit[0.900]{J/g K}$ \cite{al_heat_solid} and for the liquid $\unit[1.18]{J/g K}$ \cite{al_heat_liquid}. For the chunk of 256 Al atoms in this simulation, this corresponds to approx. $\unit[0.0644]{eV/K}$ and $\unit[0.0844]{eV/K}$. Looking at Table \ref{tab:prob5} above we see that this aligns very well to the values obtained through Eq. \eqref{eq:prob5-1} and \eqref{eq:prob5-2} in the simulation. However, we also notice that using the potential energy fluctuations have given more accurate results. We are not sure why this seems to be the case, but we have also noted that results can fluctuate somewhat between runs which might be an explanation.
 
 \section*{Problem 6}
 
@@ -155,7 +155,7 @@ Instead of using the fluctuations in the energies, the heat capacity can be calc
 \begin{equation}
 	C_V = \left( \frac{\partial E}{\partial T} \right)_{N,V}
 \end{equation}
-which we calculate by approximating it with a difference quota. To do this we first equilibrate the system temperature and pressure to the target values, i.e. 500$^\circ$ C or 700$^\circ$ C for the temperature and 1 atm for the pressure. Once this is done we equilibrate only the temperature to the target with a small difference $\Delta T$. After this second equilibration the system is simulated for some time and averages of the temperature and energy are computed. This is repeated for the same but negative $\Delta T$. Approximating the derivative with the difference quotient we obtain the results found in the table below. The parameter $\Delta T$ was chosen to be 5$^\circ$ C.
+which we calculate by approximating it with a difference quotient. To do this we first equilibrate the system temperature and pressure to the target values, i.e. 500$^\circ$ C or 700$^\circ$ C for the temperature and 1 atm for the pressure. Once this is done we equilibrate only the temperature to the target with a small difference $\Delta T$. After this second equilibration the system is simulated for some time and averages of the temperature and energy are computed. This is repeated for the same but negative $\Delta T$. Approximating the derivative with the difference quotient we obtain the results found in the table below. The parameter $\Delta T$ was chosen to be 5$^\circ$ C.
 
 \begin{table}[h!]
 	\centering	
@@ -184,7 +184,7 @@ The radial distribution function is a measure of the radial distribution of the 
 \label{fig:radial}
 \end{figure}
 
-Normally the radial distribution would converge to unity as the radius tends to infinity as over large distances the atoms are almost randomly distributed, this is not something we can see in out figure and is not expected. This is due to that our system is limited in size and we therefore can't find any particles for all distances as we have already counted that particle in the opposite direction.
+Normally the radial distribution would converge to unity as the radius tends to infinity as over large distances the atoms are almost randomly distributed. This is not something we can see in out figure and is not expected. This is due to that our system is limited in size and we therefore can't find any particles for all distances as we have already counted that particle in the opposite direction.
 
 With Matlab we find that the first local minimum is localized at $r_m = 3.7797$, giving us the coordination number $I(r_m) \approx 12.928$. The expected coordination number for an fcc structure is 12 \cite{al_coordination_nbr}, but our result is slightly higher. If the system was solid we would expect a result closer to 12.
 
@@ -195,23 +195,20 @@ One way to see that the crystal is properly melted is by studying the scattering
 \begin{equation}
 S(\mathbf{q})=\frac{1}{N}\left<|\sum_{i=1}^{N}e^{i\mathbf{q}\cdot \mathbf{r_i}(t)}|^2\right>\cite{lecnotes},
 \end{equation}
-
 where $\mathbf{q}$ are the reciprocal vectors and $r_i(t)$ is the trajectories of the particles. The reciprocal lattice is initialized on a grid with side-length $2\pi/L$, where $L$ is the cell length, so that the reciprocal lattice can be written as,
-$$
+\begin{equation}
 	\mathbf{q}=\frac{2\pi}{L}(n_x,n_y,n_z),
-$$
-
-where $n_x$, $n_y$ and $n_z$ are some integers. For our simulation we use $n_x=n_y=n_z=\pm40$, so the lattice points are some combination of $3$ numbers between $-40$ to $40$.
+\end{equation}
+where $n_x$, $n_y$ and $n_z$ are some integers. For our simulation we use $n_x, n_y, n_z \in [-40, 40]$, so the lattice points are some combination of $3$ numbers between $-40$ to $40$.
 
 The results of this simulation can be seen in (Fig.~\ref{fig:StaticStructure}) where we only consider the length of the reciprocal vectors, not their direction, i.e. we have plotted the spherical mean.
 
-In a crystalline solid the expression given above will only contain delta-function distribution contributions for the reciprocal vectors. But for a liquid we have a continuous contribution which depend on the radial distribution seen in Problem 7. Using this distribution we can write the form factor as,
-
+In a crystalline solid the expression given above will only contain delta-function distribution contributions for the reciprocal vectors. But for a liquid we have a continuous contribution which depend on the radial distribution seen in Problem 7. Using this distribution we can write the form factor as
 \begin{equation}
 S(q)= 1+ 4\pi n \int r^2\left[g(r)-1\right]\frac{\sin{qr}}{qr}dr.
 \end{equation}
 
-Direct evaluation of this integral, for the same $q$ values as the simulation, using only half maximum distance in (Fig. \ref{fig:radial}) in the radial integral to not get boundary condition problems, gives a very similar result to the $q-$grid evaluation as seen in (Fig.~\ref{fig:StaticStructure}).
+The result of direct evaluation of this integral, for the same $q$ values as in the simulation, can be found in Fig.~\ref{fig:radial} (left). Only half of the maximum distance is used in the radial integral to not get boundary condition problems. This gives a very similar result to the $q$-grid evaluation as seen in Fig.~\ref{fig:StaticStructure} (right).
 
 \begin{figure}[H]
     \centering
@@ -232,7 +229,7 @@ Direct evaluation of this integral, for the same $q$ values as the simulation, u
 
 \vfill
 \bibliography{references}
-\bibliographystyle{plain} %TODO set bibstyle
+\bibliographystyle{plain}
 
 \newpage
 \appendix
@@ -255,12 +252,16 @@ Direct evaluation of this integral, for the same $q$ values as the simulation, u
 
 \subsection{\texttt{Task7/MD\_main.c}}
 \lstinputlisting[language=c, numbers=left]{../code/Task7/MD_main.c}
+\subsection{\texttt{Task7/plot\_histogram.m}}
 \lstinputlisting[language=matlab,numbers=left]{../code/Task7/plot_histogram.m}
 
 \subsection{\texttt{Task8/MD\_main.c}}
 \lstinputlisting[language=c, numbers=left]{../code/Task8/MD_main.c}
+\subsection{\texttt{Task8/plot\_reciprocal.m}}
 \lstinputlisting[language=matlab,numbers=left]{../code/Task8/plot_reciprocal.m}
+\subsection{\texttt{Task8/plot\_integral.m}}
 \lstinputlisting[language=matlab,numbers=left]{../code/Task8/plot_integral.m}
+\subsection{\texttt{Task8/alpotential.m}}
 \lstinputlisting[language=c, numbers=left]{../code/Task8/alpotential.c}
 
 \end{document}

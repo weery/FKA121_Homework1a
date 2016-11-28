@@ -7,7 +7,7 @@
 #include "initfcc.h"
 #include "alpotential.h"
 #define nbr_of_particles 256
-#define nbr_of_timesteps 1e4
+#define nbr_of_timesteps 10000
 #define nbr_of_timesteps_eq 6000
 #define nbr_of_dimensions 3
 
@@ -264,8 +264,8 @@ int main()
     }
     fclose(file);
 
-    printf("Final Temperature: %e\n", temperature_avg[nbr_of_timesteps] );
-    printf("Final Pressure: %e\n", pressure_avg[nbr_of_timesteps] );
+    printf("Final Temperature: %e\n", temperature_avg[nbr_of_timesteps-1] );
+    printf("Final Pressure: %e\n", pressure_avg[nbr_of_timesteps-1] );
 
     free(energy_kin);		energy_kin = NULL;
     free(energy_pot); 		energy_pot = NULL;
