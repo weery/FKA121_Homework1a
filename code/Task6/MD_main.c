@@ -35,7 +35,7 @@ int main()
     double lattice_param;   // Lattice parameter, length of each side in the
                             // unit cell
     double timestep;
-    double temperature_eq[] = { 1000.0+273.15, 700.0+273.15 };
+    double temperature_eq[] = { 500.0+273.15, 500.0+273.15 };
     double delta_temperature[] = { -5.0, 5.0 };
     double pressure_eq = 101325e-11/1.602; // 1 atm in ASU
 
@@ -309,7 +309,6 @@ int main()
         energy_avg[d] /= nbr_of_timesteps;
 
         printf("Temp: %f\nAverage total energy: %.10f\n", temperature_avg[d], energy_avg[d]);
-
     }
 
     // Compute heat capacity

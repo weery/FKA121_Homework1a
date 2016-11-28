@@ -12,9 +12,9 @@
 
 \section*{Introduction}
 
-Molecular dynamics is the movement of atoms and molecules. Such a system can be simulated and what is of interest is e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.
+Molecular dynamics is the movement of atoms and molecules. Such a system can be simulated with certain properties. The interests of doing these kinds of simulation is studying e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.
 
-For the homeproblems we simulate the dynamics of the aluminium atoms by approximating their interactions by their internal positions. At the start of each simulation the atoms are placed on a FCC lattice with lattice parameter $\unit[4.046]{\AA}$ \cite{al_wiki}. These atoms are initially displaced about $\unit[5]{\%}$ of the lattice spacing and their velocities are set to zero.
+For the homeproblems we simulate the dynamics of the aluminium atoms by approximating their interactions by their pair-wise interactions. At the start of each simulation the atoms are placed on a FCC lattice with lattice parameter $\unit[4.046]{\AA}$ \cite{al_wiki}. These atoms are initially displaced about $\unit[5]{\%}$ of the lattice spacing and their velocities are set to zero.
 
 \section*{Problem 1}
 
@@ -61,12 +61,35 @@ The third problem was about implementing routines for equilibrating the molecula
 
 The three main parameters for the equilibration are the timestep (used in the velocity Verlet algorithm) $\Delta t$ and the temperature and pressure relaxation times, $\tau_T$ and $\tau_P$ respectively. The timestep used was 5 fs and the temperature relaxation time was chosen to be $\tau_T = 100 \Delta t$, i.e. choosing the $\Delta t/\tau_T$ quotient in the $\alpha_T$ calculation to be equal 0.01.
 
-When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$ \cite{knowledgedoor}, but $\tau_P$ is instead chosen in such a way thatv $\kappa_T$ is cancelled out. For these simulation we chose $\tau_P = 100\Delta t \kappa_T$.
+When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$ \cite{knowledgedoor}, but $\tau_P$ is instead chosen in such a way that $\kappa_T$ is cancelled out. For these simulation we chose $\tau_P = 100\Delta t \kappa_T$.
 
 % parameters: tau, delta t, kappa,
 
-In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. There are some fluctuations in the beginning due to the rescaling of the velocities.
+In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. The average temperature and pressure was found to be, $T_{avg}=\unit[772.07]{K}$ and $P_{avg}=1.40\cdot 10^{-4}$.
 
+The scaling of the velocities are calculated by,
+
+\begin{equation}
+\mathbf{v_i}^{new} = \alpha_T^{1/2}\mathbf{v_i}^{old}
+\end{equation}
+
+where,
+
+\begin{equation}
+\alpha_T(t) = 1+\frac{\Delta t}{\tau_T}\frac{T_{eq}-T(t)}{T(t)},
+\end{equation}
+
+with $T_{eq}$ as the target temperature and $T(t)$ the instantaneous temperature.
+
+Similarily, but with small changes we scale the positions through,
+
+\begin{equation}
+\alpha_P(t)=1-\kappa_T\frac{\Delta t}{\tau_P}\left[P_{eq}-P(t)\right],
+\end{equation}
+
+where $P_{eq}$ is the target pressure and $P(t)$ is the instantanoeus pressure.\\
+
+The calculations of the instantaneous temperature and pressure, as well as the averages, can be found in 5.2 and 5.3 in \cite{lecnotes}.
 
 \section*{Problem 4}
 
@@ -131,17 +154,15 @@ From our MD simulations we obtained the values found in {Table \ref{tab:prob5}} 
 	\label{tab:prob5}
 \end{table}
 
-From experiments the heat capacity for aluminium in a solid is found to be $\unit[0.900]{J/g K}$ \cite{al_heat_solid} and for the liquid $\unit[1.18]{J/g K}$ \cite{al_heat_liquid}. For the chunk of 256 Al atoms in this simulation, this correspond to approx. $\unit[0.0644]{eV/K}$ and $\unit[0.0844]{eV/K}$. Looking at Table \ref{tab:prob5} above we see that this aligns very well to the values obtained through Eq. \eqref{eq:prob5-1} and \eqref{eq:prob5-2} in the simulation. However, we also notice that using the potential energy fluctuations have given more accurate results. We are not sure why this seems to be the case, but we have also noted that results can fluctuate a lot between runs which might be an explanation.
-
-
+From experiments the heat capacity for aluminium in a solid is found to be $\unit[0.900]{J/g K}$ \cite{al_heat_solid} and for the liquid $\unit[1.18]{J/g K}$ \cite{al_heat_liquid}. For the chunk of 256 Al atoms in this simulation, this correspond to approx. $\unit[0.0644]{eV/K}$ and $\unit[0.0844]{eV/K}$. Looking at Table \ref{tab:prob5} above we see that this aligns very well to the values obtained through Eq. \eqref{eq:prob5-1} and \eqref{eq:prob5-2} in the simulation. However, we also notice that using the potential energy fluctuations have given more accurate results. We are not sure why this seems to be the case, but we have also noted that results can fluctuate some between runs which might be an explanation.
 
 \section*{Problem 6}
 
-When instead using the relation
+Instead of using the fluctuations in the energies, the heat capacity can be calculated from 
 \begin{equation}
 	C_V = \left( \frac{\partial E}{\partial T} \right)_{N,V}
 \end{equation}
-and approximate it with a difference quota. To do this we first equilibrate the system temperature and pressure to the target values, i.e. 500$^\circ$ C or 700$^\circ$ C for the temperature and 1 atm for the pressure. Once this is done we equilibrate only the temperature to the target with a small difference $\Delta T$. After this second equilibration the system is simulated for some time and averages of the temperature and energy are computed. This is repeated for the same but negative $\Delta T$. Approximating the derivative with the difference quotient we obtain the results found in the table below. The parameter $\Delta T$ was chosen to be 5$^\circ$ C.
+which we calculate by approximating it with a difference quota. To do this we first equilibrate the system temperature and pressure to the target values, i.e. 500$^\circ$ C or 700$^\circ$ C for the temperature and 1 atm for the pressure. Once this is done we equilibrate only the temperature to the target with a small difference $\Delta T$. After this second equilibration the system is simulated for some time and averages of the temperature and energy are computed. This is repeated for the same but negative $\Delta T$. Approximating the derivative with the difference quotient we obtain the results found in the table below. The parameter $\Delta T$ was chosen to be 5$^\circ$ C.
 
 \begin{table}[h!]
 	\centering	
@@ -157,7 +178,7 @@ If we compare the result to the ones obtained in experiments and those obtained 
 
 \section*{Problem 7}
 
-The radial distribution function obtained can be found in figure~\ref{fig:radial}. Using Matlab we find that the first peak is at the distance 2.85 \r{A}, which corresponds to the shortest distance in a fcc structure with the unit cell length of 4.046 \r{A}. This is the distance between one of the corner atoms and a face centered atom close to that corner, which is expected.
+The radial distribution function is a measure of the radial distribution of the atoms in the crystal compared to an ideal spherical distribution. For large radius this quota should converge to one. The radial distribution function obtained can be found in figure~\ref{fig:radial}. Using Matlab we find that the first peak is at the distance 2.85 \r{A}, which corresponds to the shortest distance in a fcc structure with the unit cell length of 4.046 \r{A}. This is the distance between one of the corner atoms and a face centered atom close to that corner, which is expected.
 
 \begin{figure}[H]
 \centering
@@ -252,4 +273,5 @@ Direct evaluation of this integral, for the same $q$ values as the simulation, u
 \lstinputlisting[language=matlab,numbers=left]{../code/Task8/plot_reciprocal.m}
 \lstinputlisting[language=matlab,numbers=left]{../code/Task8/plot_integral.m}
 \lstinputlisting[language=c, numbers=left]{../code/Task8/alpotential.c}
+
 \end{document}
