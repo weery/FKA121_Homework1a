@@ -17,6 +17,6 @@ legend({'Instantanous pressure','Target pressure'},'interpreter','latex','locati
 % 
 % labels
 xlabel('Time / [ps]','interpreter','latex')
-ylabel('Pressure / [eV/\AA]','interpreter','latex')
+ylabel('Pressure / [eV/\AA$^3$]','interpreter','latex')
 % title
 title('Pressure equilibration','interpreter','latex')

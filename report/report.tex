@@ -12,26 +12,26 @@
 
 \section*{Introduction}
 
-Molecular dynamics is the movement of atoms and molecules. Such a system can be simulated with certain properties. The interests of doing these kinds of simulation is studying e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.
+Molecular dynamics is the movement of atoms and molecules. Such a system can be simulated with certain properties. The interests of doing these kinds of simulations is studying e.g. the trajectories of the atoms given specific surrounding parameters such as temperature, pressure, crystal formation etc. For this homeproblem we study the dynamics of aluminium atoms in a FCC crystal lattice.
 
-For the homeproblems we simulate the dynamics of the aluminium atoms by approximating their interactions by their pair-wise interactions. At the start of each simulation the atoms are placed on a FCC lattice with lattice parameter $\unit[4.046]{\AA}$ \cite{al_wiki}. These atoms are initially displaced about $\unit[5]{\%}$ of the lattice spacing and their velocities are set to zero.
+For the homeproblem we simulate the dynamics of the aluminium atoms by approximating their interactions by their pair-wise interactions. At the start of each simulation the atoms are placed on a FCC lattice with lattice parameter $\unit[4.046]{\AA}$ \cite{al_wiki}. These atoms are initially displaced about $\unit[5]{\%}$ of the lattice spacing and their velocities are set to zero.
 
 \section*{Problem 1}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{graphics/task1/energy.png}
-    \caption{For different time-steps the energy evolves differently over time, in the figure we there are four simulations with different time-steps. The time-steps increases with $\unit[0.01]{ps}$ for each simulation and the total energy starts to increase for time-steps of $\unit[0.03]{ps}$.}
+    \caption{For different time-steps the energy evolves differently over time, in the figure there are four simulations with different time-steps. The time-steps increases with $\unit[0.01]{ps}$ for each simulation and the total energy starts to increase for time-steps of $\unit[0.03]{ps}$.}
     \label{fig:timestep}
 \end{figure}
 
-For the simulations we updated the positions and velocities of the particles by applying the velocity verlet algorithm.
+For the simulations we update the positions and velocities of the particles by applying the velocity verlet algorithm, which is described below.
 
 \begin{itemize}
-\item $v \leftarrow v +\frac{1}{2}a\Delta t, \;$ update velocity from current acceleration.
+\item $v \leftarrow v +\frac{1}{2}a\Delta t, \;$ update velocity from current acceleration with half a timestep.
 \item $q \leftarrow q +v\Delta t, \;$ update displacement from current velocity.
 \item $a \leftarrow a, \;$ update acceleration from the applied forces.
-\item $v \leftarrow v +\frac{1}{2}a\Delta t, \;$ update velocity from new acceleration.
+\item $v \leftarrow v +\frac{1}{2}a\Delta t, \;$ update velocity from new acceleration with another half-step.
 \end{itemize}
 
 For this algorithm to be stable, we need to choose a time-step that conserves the total energy. With the algorithm implemented we can simulate the system and study the time evolution of the total energies. In Fig. \ref{fig:timestep} we can see the implications of different time-steps. We can see that the energy is unstable for $\Delta t = \unit[0.03]{ps}$ and stable for the previous one at $\Delta t = \unit[0.025]{ps}$. To have some safety margin we will, for the rest of the report, use a time-step of $\Delta t = \unit[0.005]{ps}$.
@@ -53,43 +53,36 @@ For this algorithm to be stable, we need to choose a time-step that conserves th
         \centering
         \includegraphics[width=\textwidth]{graphics/task3/traj.png}
     \end{subfigure}
-    \caption{\textit{Upper left:} The time evolution of the pressure during equilibration. The target pressure was set to $\unit[1]{atm} = \unit[6.3249e^{-7}]{eV/\AA}$. \textit{Upper right:} The time evolution of the temperature during equilibration. The target temperature was set to 500$^\circ$ C and we can see that it quickly reaches the target temperature. \textit{Lower:} 3D plot of trajectories for three of the aluminium particles during 100 ps after the equilibration process. As we can see they stay close to the initial position, which indicates that the system is in its solid state. Note that the scales are not the same on all axes.}
+    \caption{\textit{Upper left:} The time evolution of the pressure during equilibration. The target pressure was set to $\unit[1]{atm} = \unit[6.3249e^{-7}]{eV/\AA^3}$. \textit{Upper right:} The time evolution of the temperature during equilibration. The target temperature was set to 500$^\circ$ C and we can see that it quickly reaches the target temperature. \textit{Lower:} 3D plot of trajectories for three of the aluminium particles during 100 ps after the equilibration process. As we can see they stay close to the initial position, which indicates that the system is in its solid state. Note that the scales are not the same on all axes.}
     \label{fig:equilibrium500}
 \end{figure}
 
-The third problem was about implementing routines for equilibrating the molecular dynamics system to a specified temperature, $T_{eq} = 500^\circ$ C, at pressure $P_{eq} = 1$ atm. The equilibration was implemented using scaling of the velocities and the total volume, and consquently the positions of the molecules as well. The equations used can be found in appendix D in the molecular dynamics lecture notes \cite{lecnotes}. The goal was to study the temperature and pressure after the equilibration process through constant energy and volume simulation. We also plot the trajectories of a few particles to show that the system is still in a solid state (Fig. \ref{fig:equilibrium500}, lower subfigure).
+The third problem was about implementing routines for equilibrating the molecular dynamics system to a specified temperature, $T_{eq} = 500^\circ$ C, at pressure $P_{eq} = 1$ atm. The equilibration was implemented using scaling of the velocities and the total volume, and consquently the positions of the molecules as well. The goal was to study the temperature and pressure after the equilibration process through constant energy and volume simulation. We also plot the trajectories of a few particles to show that the system is still in a solid state (Fig. \ref{fig:equilibrium500}, lower subfigure).
 
-The three main parameters for the equilibration are the timestep (used in the velocity Verlet algorithm) $\Delta t$ and the temperature and pressure relaxation times, $\tau_T$ and $\tau_P$ respectively. The timestep used was 5 fs and the temperature relaxation time was chosen to be $\tau_T = 100 \Delta t$, i.e. choosing the $\Delta t/\tau_T$ quotient in the $\alpha_T$ calculation to be equal 0.01.
+The three main parameters for the equilibration are the timestep $\Delta t$ used in the velocity Verlet algorithm and the temperature and pressure relaxation times, $\tau_T$ and $\tau_P$ respectively. The timestep used was 5 fs, as described in the first problem, and the temperature relaxation time was chosen to be $\tau_T = 100 \Delta t$, i.e. choosing the $\Delta t/\tau_T$ quotient in the $\alpha_T$ calculation to be equal to 0.01.
 
 When equilibrating the pressure the isothermic compressibility, $\kappa_T$, is used when computing $\alpha_P(t)$. The isothermic compressibility for aluminium is 0.01385 GPa$^{-1}$ \cite{knowledgedoor}, but $\tau_P$ is instead chosen in such a way that $\kappa_T$ is cancelled out. For these simulation we chose $\tau_P = 100\Delta t \kappa_T$.
 
-% parameters: tau, delta t, kappa,
+In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. The average temperature and pressure post-equilibration was found to be $T_{avg}=\unit[772.07]{K}$ and $P_{avg}=1.40\cdot 10^{-4}$.
 
-In order to set the system to a certain temperature, a technique involving scaling all the velocities during a equilibrating state. Since the temperature depends on the kinetic energies which in turn depends on the velocities, the  temperature can thusly be changed by changing velocities. In figure \ref{fig:equilibrium500} we can see the temperature after setting the temperature to $\unit[500]{C^\circ}$. The average temperature and pressure was found to be, $T_{avg}=\unit[772.07]{K}$ and $P_{avg}=1.40\cdot 10^{-4}$.
-
-The scaling of the velocities are calculated by,
-
+The previously mentioned scaling of the velocities is given by
 \begin{equation}
-\mathbf{v_i}^{new} = \alpha_T^{1/2}\mathbf{v_i}^{old}
+\mathbf{v_i}^{new} = \alpha_T^{1/2}\mathbf{v_i}^{old},
 \end{equation}
-
-where,
-
+where
 \begin{equation}
 \alpha_T(t) = 1+\frac{\Delta t}{\tau_T}\frac{T_{eq}-T(t)}{T(t)},
 \end{equation}
+$T_{eq}$ being the target temperature and $T(t)$ the instantaneous temperature.
 
-with $T_{eq}$ as the target temperature and $T(t)$ the instantaneous temperature.
-
-Similarily, but with small changes we scale the positions through,
-
+Similarily, but with small changes we scale the positions using
 \begin{equation}
 \alpha_P(t)=1-\kappa_T\frac{\Delta t}{\tau_P}\left[P_{eq}-P(t)\right],
 \end{equation}
-
-where $P_{eq}$ is the target pressure and $P(t)$ is the instantanoeus pressure.\\
+where $P_{eq}$ is the target pressure and $P(t)$ is the instantanoeus pressure.
 
 The calculations of the instantaneous temperature and pressure, as well as the averages, can be found in 5.2 and 5.3 in \cite{lecnotes}.
+
 
 \section*{Problem 4}
 
@@ -235,10 +228,6 @@ Direct evaluation of this integral, for the same $q$ values as the simulation, u
     \label{fig:StaticStructure}
 \end{figure}
 
-
-
-
-\section*{Concluding discussion}
 
 
 \vfill
