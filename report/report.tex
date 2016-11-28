@@ -176,9 +176,28 @@ With Matlab we find that the first local minimum is localized at $r_m = 3.7797$,
 
 \section*{Problem 8}
 
-In Problem 8 we were, once again, tasked to examine the aluminium particles at 700$^\circ$ C and 1 atm. This time we examined the static structure factor $S(q)$ through 2 different methods; by integrating the result from the previous problem in accordance to Eq. (58) in \cite{lecnotes} and by simulating the system and evaluating Eq. (55) in \cite{lecnotes}.
+One way to see that the crystal is properly melted is by studying the scattering of an incoming beam. This can be studied through the reciprocal vectors, which when coincides with the incoming beam's wavevectors contributes to the structure factor \cite{kittel},
 
-Below (Fig.~\ref{fig:StaticStructure}) are two plots showing the approximations of the static structure function. The leftmost figure is obtained by integrating the result from Problem 7 and the rightmost one is obtained via simulation. 
+\begin{equation}
+S(\mathbf{q})=\frac{1}{N}\left<|\sum_{i=1}^{N}e^{i\mathbf{q}\cdot \mathbf{r_i}(t)}|^2\right>\cite{lecnotes},
+\end{equation}
+
+where $\mathbf{q}$ are the reciprocal vectors and $r_i(t)$ is the trajectories of the particles. The reciprocal lattice is initialized on a grid with side-length $2\pi/L$, where $L$ is the cell length, so that the reciprocal lattice can be written as,
+$$
+	\mathbf{q}=\frac{2\pi}{L}(n_x,n_y,n_z),
+$$
+
+where $n_x$, $n_y$ and $n_z$ are some integers. For our simulation we use $n_x=n_y=n_z=\pm40$, so the lattice points are some combination of $3$ numbers between $-40$ to $40$.
+
+The results of this simulation can be seen in (Fig.~\ref{fig:StaticStructure}) where we only consider the length of the reciprocal vectors, not their direction, i.e. we have plotted the spherical mean.
+
+In a crystalline solid the expression given above will only contain delta-function distribution contributions for the reciprocal vectors. But for a liquid we have a continuous contribution which depend on the radial distribution seen in Problem 7. Using this distribution we can write the form factor as,
+
+\begin{equation}
+S(q)= 1+ 4\pi n \int r^2\left[g(r)-1\right]\frac{\sin{qr}}{qr}dr.
+\end{equation}
+
+Direct evaluation of this integral, for the same $q$ values as the simulation, using only half maximum distance in (Fig. \ref{fig:radial}) in the radial integral to not get boundary condition problems, gives a very similar result to the $q-$grid evaluation as seen in (Fig.~\ref{fig:StaticStructure}).
 
 \begin{figure}[H]
     \centering
@@ -194,6 +213,8 @@ Below (Fig.~\ref{fig:StaticStructure}) are two plots showing the approximations 
     \caption{The static structure function computed both from the radial distribution function in Figure \ref{fig:radial} (left) and using bins in Fourier space (right).}
     \label{fig:StaticStructure}
 \end{figure}
+
+
 
 
 \section*{Concluding discussion}
@@ -224,32 +245,11 @@ Below (Fig.~\ref{fig:StaticStructure}) are two plots showing the approximations 
 
 \subsection{\texttt{Task7/MD\_main.c}}
 \lstinputlisting[language=c, numbers=left]{../code/Task7/MD_main.c}
+\lstinputlisting[language=matlab,numbers=left]{../code/Task7/plot_histogram.m}
 
 \subsection{\texttt{Task8/MD\_main.c}}
 \lstinputlisting[language=c, numbers=left]{../code/Task8/MD_main.c}
+\lstinputlisting[language=matlab,numbers=left]{../code/Task8/plot_reciprocal.m}
+\lstinputlisting[language=matlab,numbers=left]{../code/Task8/plot_integral.m}
 \lstinputlisting[language=c, numbers=left]{../code/Task8/alpotential.c}
-
-
-
-
-\begin{comment}
-\appendix
-
-\section{Source Code}
-
-Include all source code here in the appendix. Keep the code formatting clean,
-use indentation, and comment your code to make it easy to understand. Also,
-break lines that are too long. (Keep them under 80 characters!)
-
-\subsection{Calculating pi using matlab: \texttt{pi.m}}
-\lstinputlisting[language=matlab,numbers=left]{template_files/pi.m}
-
-\subsection{Calculating pi using python: \texttt{pi.py}}
-\lstinputlisting[language=python,numbers=left]{template_files/pi.py}
-
-\subsection{Calculating pi using C: \texttt{pi.c}}
-\lstinputlisting[language=c,numbers=left]{template_files/pi.c}
-
-\end{comment}
-
 \end{document}

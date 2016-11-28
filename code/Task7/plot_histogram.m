@@ -4,7 +4,7 @@ clear all
 data = importdata('histogram.dat');
 % plot
 figure;
-% Rätt faktor antal tidssteg och antal atomer
+% Divide with number of timesteps and number of atoms
 g=data(:,3)./data(:,4)/10000/256;
 
 plot(data(:,1),g)
